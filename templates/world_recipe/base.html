@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}World Recipe{% endblock %}</title>
+    <title>World Recipe - {% block title %}Base{% endblock %}</title>
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
 
@@ -16,10 +16,10 @@
                 <img src="{% static 'images/logo.png' %}" alt="World Recipe Logo" height="30">
             </a>
 
-            <form method="GET" action="{% url 'world_recipe:search' %}">
+            {% comment %} <form method="GET" action="{% url 'world_recipe:search' %}">
                 <input type="search" placeholder="Search recipes..." name="q">
                 <button type="submit">Search</button>
-            </form>
+            </form> {% endcomment %}
 
             <div>
                 {% if user.is_authenticated %}
@@ -31,15 +31,15 @@
                         </div>
                     </div>
                 {% else %}
-                    <a href="{% url 'world_recipe:login' %}">Login</a>
-                    <a href="{% url 'world_recipe:register' %}">Register</a>
+                    {% comment %} <a href="{% url 'world_recipe:login' %}">Login</a>
+                    <a href="{% url 'world_recipe:register' %}">Register</a> {% endcomment %}
                 {% endif %}
             </div>
         </div>
     </nav>
 
     <main>
-        {% block body_block %}
+        {% block body %}
         {% endblock %}
     </main>
 
@@ -52,8 +52,8 @@
             <div>
                 <h5>Links</h5>
                 <ul>
-                    <li><a href="{% url 'world_recipe:about' %}">About</a></li>
-                    <li><a href="{% url 'world_recipe:contact' %}">Contact</a></li>
+                    {% comment %} <li><a href="{% url 'world_recipe:about' %}">About</a></li>
+                    <li><a href="{% url 'world_recipe:contact' %}">Contact</a></li> {% endcomment %}
                 </ul>
             </div>
         </div>
