@@ -1,1 +1,75 @@
 <!DOCTYPE html>
+{% load staticfiles %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}World Recipe{% endblock %}</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div>
+            <a href="{% url 'world_recipe:index' %}">
+                <img src="{% static 'images/logo.png' %}" alt="World Recipe Logo" height="30">
+            </a>
+
+            <form method="GET" action="{% url 'world_recipe:search' %}">
+                <input type="search" placeholder="Search recipes..." name="q">
+                <button type="submit">Search</button>
+            </form>
+
+            <div>
+                {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <img src="{{ user.profile.picture.url }}" alt="Profile" width="30" height="30">
+                        <div class="dropdown-content" hidden>
+                            <a href="{% url 'world_recipe:profile' %}">My Profile</a>
+                            <a href="{% url 'world_recipe:logout' %}">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'world_recipe:login' %}">Login</a>
+                    <a href="{% url 'world_recipe:register' %}">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block body_block %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <div>
+            <div>
+                <h5>World Recipe</h5>
+                <p>Share and discover amazing recipes from around the world.</p>
+            </div>
+            <div>
+                <h5>Links</h5>
+                <ul>
+                    <li><a href="{% url 'world_recipe:about' %}">About</a></li>
+                    <li><a href="{% url 'world_recipe:contact' %}">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div>© 2025 World Recipe. Creaated By Group 6C.</div>
+    </footer>
+
+    <script> //temp toggle implementation
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdown = document.querySelector('.dropdown');
+            if (dropdown) {
+                dropdown.addEventListener('click', function() {
+                    const content = this.querySelector('.dropdown-content');
+                    content.hidden = !content.hidden;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
