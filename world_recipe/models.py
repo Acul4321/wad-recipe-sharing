@@ -5,7 +5,7 @@ class Recipe(models.Model):
     name = models.CharField(max_length=200)
     location = models.CharField(max_length=100)
     meal_type = models.CharField(max_length=100)
-    ingredients = models.JSONField()
+    ingredients = models.JSONField()jhj
     instructions = models.JSONField()
 
 
