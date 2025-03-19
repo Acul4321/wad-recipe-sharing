@@ -46,8 +46,6 @@ COUNTRIES = {
     177: 'Zambia', 178: 'Zimbabwe'
 }
 
-# ...existing code...
-
 def get_country_name(country_id):
     return COUNTRIES.get(country_id)
 
