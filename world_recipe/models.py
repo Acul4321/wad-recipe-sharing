@@ -14,7 +14,7 @@ from utils import get_country_name, get_country_id,COUNTRIES
 class UserProfile(models.Model):
     # primary key id is automatically created
     user = models.OneToOneField(User, on_delete=models.CASCADE) # username,password
-    originID = models.models.IntegerField(validators=[MaxValueValidator(len(COUNTRIES)-1), MinValueValidator(0)], blank=False) #range of countries indexes
+    originID = models.IntegerField(validators=[MaxValueValidator(len(COUNTRIES)-1), MinValueValidator(0)], blank=False) #range of countries indexes
     # add a default image
     profile_picture = models.ImageField(upload_to='profile_pictures', default='profile_pictures/default.jpg')
     description = models.TextField(max_length=500, blank=True)
@@ -62,7 +62,7 @@ def get_image_filename(instance, filename):
     id = instance.post.id
     return "recipe_images/%s" % (id) 
 class RecipeImages(models.Model):
-    recipe = models.ForeignKey(Recipe, default=None)
+    recipe = models.ForeignKey(Recipe, default=None, on_delete=models.CASCADE)
     image = models.ImageField(upload_to=get_image_filename,verbose_name='Image')
 
 #
