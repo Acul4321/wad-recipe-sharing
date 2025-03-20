@@ -1,8 +1,12 @@
 {% extends "world_recipe/base.html" %}
-{% load staticfiles %}
+{% load static %}
 
 {% block title %}Home{% endblock %}
 
 {% block body %}
-Hello
+{% if user.is_authenticated %}
+    <h1>Hello {{ user.username }}</h1>
+{% else %}
+    <h1>Hello Guest</h1>
+{% endif %}
 {% endblock %}
