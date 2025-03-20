@@ -1,0 +1,25 @@
+{% extends 'world_recipe/base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h2>Login to World Recipe</h2>
+    <form method="post" action="{% url 'world_recipe:login' %}">
+        {% csrf_token %}
+        {% for field in user_form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="alert alert-danger">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+</div>
+{% endblock %}

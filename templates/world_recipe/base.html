@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load staticfiles %}
+{% load static %}
 
 <html lang="en">
 <head>
@@ -26,13 +26,13 @@
                     <div class="dropdown">
                         <img src="{{ user.profile.picture.url }}" alt="Profile" width="30" height="30">
                         <div class="dropdown-content" hidden>
-                            <a href="{% url 'world_recipe:profile' %}">My Profile</a>
+                            <a href="{% url 'world_recipe:profile' user.username %}">My Profile</a>
                             <a href="{% url 'world_recipe:logout' %}">Logout</a>
                         </div>
                     </div>
                 {% else %}
-                    {% comment %} <a href="{% url 'world_recipe:login' %}">Login</a>
-                    <a href="{% url 'world_recipe:register' %}">Register</a> {% endcomment %}
+                    <a href="{% url 'world_recipe:login' %}">Login</a>
+                    <a href="{% url 'world_recipe:register' %}">Register</a
                 {% endif %}
             </div>
         </div>

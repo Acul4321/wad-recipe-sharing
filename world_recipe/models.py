@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.contrib.postgres.fields import ArrayField
 from django.db.models import Avg
 from django.utils import timezone
 
@@ -47,9 +46,9 @@ class Recipe(models.Model):
     authorID = models.ForeignKey(User, on_delete=models.CASCADE)
     originID = models.IntegerField(validators=[MaxValueValidator(len(COUNTRIES)-1), MinValueValidator(0)], blank=False) #range of countries indexes
     meal_type = models.CharField(max_length=2, choices=MealType.choices, blank=False)
-    #array of images linked though RecipeImages model
-    ingredients = ArrayField(models.CharField(max_length=200))
-    instructions = ArrayField(models.TextField(max_length=2000))
+    title = models.CharField(max_length=200, blank=False)  # Add title field
+    ingredients = models.TextField(blank=False)
+    instructions = models.TextField(blank=False)
 
     def __str__(self):
         return self.title
@@ -57,6 +56,11 @@ class Recipe(models.Model):
     def average_rating(self) -> float:
         return Rating.objects.filter(post=self).aggregate(Avg("rating"))["rating__avg"] or 0
     
+    def get_ingredients_list(self):
+        return [x.strip() for x in self.ingredients.split('\n') if x.strip()]
+        
+    def get_instructions_list(self):
+        return [x.strip() for x in self.instructions.split('\n') if x.strip()]
 
 def get_image_filename(instance, filename):
     id = instance.post.id
