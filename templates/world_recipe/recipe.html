@@ -57,6 +57,16 @@
             {% endif %}
         </div>
 
+        {% if user.is_authenticated %}
+            <button id="favorite-btn" class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %}"
+                    data-recipe-id="{{ recipe.id }}">
+                <svg class="star" style="width: 24px; height: 24px;" aria-hidden="true">
+                    <use href="#star" class="{% if is_favorite %}star-filled{% else %}star-empty{% endif %}"/>
+                </svg>
+                <span>{% if is_favorite %}Unfavorite{% else %}Favorite{% endif %}</span>
+            </button>
+        {% endif %}
+        
         <h1>{{ recipe.title }}</h1>
         <div class="recipe-meta">
             <p>By: <a href="{% url 'world_recipe:profile' recipe.authorID.username %}">{{ recipe.authorID.username }}</a></p>
@@ -363,5 +373,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+</script>
+<script>
+    document.getElementById('favorite-btn').addEventListener('click', function(e) {
+        e.preventDefault();
+        const btn = this;
+        const starUse = btn.querySelector('use');
+        const spanText = btn.querySelector('span');
+        
+        fetch('{% url "world_recipe:toggle_favorite" country=country meal_type=meal_type recipe_name=recipe.slug %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (data.is_favorite) {
+                    btn.classList.remove('btn-outline-danger');
+                    btn.classList.add('btn-danger');
+                    starUse.setAttribute('class', 'star-filled');
+                    spanText.textContent = 'Unfavorite';
+                } else {
+                    btn.classList.remove('btn-danger');
+                    btn.classList.add('btn-outline-danger');
+                    starUse.setAttribute('class', 'star-empty');
+                    spanText.textContent = 'Favorite';
+                }
+            }
+        });
+    });
 </script>
 {% endblock %}

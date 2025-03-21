@@ -7,7 +7,7 @@ from django.contrib.auth import login as auth_login
 from django.shortcuts import redirect, reverse
 from django.http import HttpResponse, JsonResponse
 from world_recipe.forms import UserForm, UserProfileForm, ProfileEditForm, RecipeForm
-from world_recipe.models import UserProfile, Recipe, Comment, Rating
+from world_recipe.models import UserProfile, Recipe, Comment, Rating, Favorite
 from utils import COUNTRIES, get_country_name, get_country_id
 from django.db.models import Avg
 from django.contrib.auth.models import User
@@ -84,6 +84,7 @@ def profile(request, username):
     try:
         user = User.objects.get(username=username)
         user_profile = UserProfile.objects.get(user=user)
+        favorite_recipes = Recipe.objects.filter(favorite__user=user)
         
         if request.method == 'POST' and request.user == user:
             form = ProfileEditForm(request.POST, request.FILES, instance=user_profile)
@@ -97,6 +98,7 @@ def profile(request, username):
             'userprofile': user_profile,
             'selected_user': user,
             'profile_form': form,
+            'favorite_recipes': favorite_recipes,
         }
         return render(request, 'world_recipe/profile.html', context_dict)
     except (User.DoesNotExist, UserProfile.DoesNotExist):
@@ -160,11 +162,17 @@ def recipe(request, country, meal_type, recipe_name):
         if (slugify(recipe.get_country_name()) != country or 
             slugify(recipe.get_meal_type()) != meal_type):
             return HttpResponse("Recipe not found")
+        
+        # Check if user has favorited this recipe
+        is_favorite = False
+        if request.user.is_authenticated:
+            is_favorite = Favorite.objects.filter(user=request.user, recipe=recipe).exists()
             
         context = {
             'recipe': recipe,
             'country': country,
             'meal_type': meal_type,
+            'is_favorite': is_favorite,
         }
         return render(request, 'world_recipe/recipe.html', context)
     except Recipe.DoesNotExist:
@@ -241,3 +249,47 @@ def rate(request, country, meal_type, recipe_name):
             return JsonResponse({'status': 'error', 'message': str(e)})
     
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@login_required
+def toggle_favorite(request, recipe_id):
+    if not request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+        
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    favorite, created = Favorite.objects.get_or_create(
+        user=request.user,
+        recipe=recipe
+    )
+    
+    if not created:
+        favorite.delete()
+        is_favorite = False
+    else:
+        is_favorite = True
+        
+    return JsonResponse({
+        'status': 'success',
+        'is_favorite': is_favorite
+    })
+
+@login_required
+def toggle_favorite(request, country, meal_type, recipe_name):
+    if not request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+        
+    recipe = get_object_or_404(Recipe, slug=recipe_name)
+    favorite, created = Favorite.objects.get_or_create(
+        user=request.user,
+        recipe=recipe
+    )
+    
+    if not created:
+        favorite.delete()
+        is_favorite = False
+    else:
+        is_favorite = True
+        
+    return JsonResponse({
+        'status': 'success',
+        'is_favorite': is_favorite
+    })
