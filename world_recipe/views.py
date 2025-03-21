@@ -6,10 +6,11 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
 from django.shortcuts import redirect, reverse
 from django.http import HttpResponse
-from world_recipe.forms import UserForm, UserProfileForm
+from world_recipe.forms import UserForm, UserProfileForm, ProfileEditForm
 from world_recipe.models import UserProfile, Recipe, Comment, Rating
 from utils import COUNTRIES, get_country_name, get_country_id
 from django.db.models import Avg
+from django.contrib.auth.models import User
 
 def index(request):
     context_dict ={}
@@ -77,7 +78,26 @@ def logout(request): # since user is logged in, we do not need to check
 
 
 def profile(request, username):
-    return HttpResponse(f"Profile page for {username}")
+    try:
+        user = User.objects.get(username=username)
+        user_profile = UserProfile.objects.get(user=user)
+        
+        if request.method == 'POST' and request.user == user:
+            form = ProfileEditForm(request.POST, request.FILES, instance=user_profile)
+            if form.is_valid():
+                form.save()
+                return redirect('world_recipe:profile', username=username)
+        else:
+            form = ProfileEditForm(instance=user_profile)
+        
+        context_dict = {
+            'userprofile': user_profile,
+            'selected_user': user,
+            'profile_form': form,
+        }
+        return render(request, 'world_recipe/profile.html', context_dict)
+    except (User.DoesNotExist, UserProfile.DoesNotExist):
+        return redirect('world_recipe:index')
 
 @login_required
 def add_recipe(request):

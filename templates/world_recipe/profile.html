@@ -1,0 +1,67 @@
+{% extends 'world_recipe/base.html' %}
+{% load static %}
+
+{% block title %}{{ selected_user.username }}'s Profile{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="profile-header">
+        <img src="{{ MEDIA_URL }}{{ userprofile.profile_picture.url }}" alt="Profile Picture" class="profile-picture" width="200" height="200">
+        <h2>{{ selected_user.username }}'s Profile</h2>
+        {% if request.user == selected_user %}
+            <button id="edit-toggle" class="btn btn-primary">Edit Profile</button>
+        {% endif %}
+    </div>
+
+    <!-- Profile View Section -->
+    <div id="profile-view">
+        <div class="profile-section">
+            <h3>About Me</h3>
+            <p>{{ userprofile.description|default:"No description provided." }}</p>
+            <p>Origin: {{ userprofile.get_country_name }}</p>
+        </div>
+    </div>
+
+    <!-- Profile Edit Section -->
+    {% if request.user == selected_user %}
+        <div id="profile-edit" style="display: none;">
+            <form method="post" action="{% url 'world_recipe:profile' user.username %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for field in profile_form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="alert alert-danger">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-secondary" id="cancel-edit">Cancel</button>
+            </form>
+        </div>
+    {% endif %}
+
+    <!-- User's Recipes Section -->
+    {% comment %} <div class="profile-section">
+        <h3>My Recipes</h3>
+        
+    </div>
+</div> {% endcomment %}
+
+{% if request.user == selected_user %}
+<script>
+    document.getElementById('edit-toggle').addEventListener('click', function() {
+        document.getElementById('profile-view').style.display = 'none';
+        document.getElementById('profile-edit').style.display = 'block';
+    });
+
+    document.getElementById('cancel-edit').addEventListener('click', function() {
+        document.getElementById('profile-edit').style.display = 'none';
+        document.getElementById('profile-view').style.display = 'block';
+    });
+</script>
+{% endif %}
+{% endblock %}
