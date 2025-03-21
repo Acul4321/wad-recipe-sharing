@@ -33,3 +33,17 @@ class UserForm(forms.ModelForm): #used for login and part of registering(store U
     class Meta:
         model = User
         fields = ('username', 'password')
+
+class ProfileEditForm(forms.ModelForm):
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control'}),
+        required=False
+    )
+    profile_picture = forms.ImageField(
+        widget=forms.FileInput(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    class Meta:
+        model = UserProfile
+        fields = ('description', 'profile_picture')

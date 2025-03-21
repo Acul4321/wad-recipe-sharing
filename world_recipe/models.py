@@ -23,10 +23,10 @@ class UserProfile(models.Model):
         return self.user.username
 
     def get_country_id(self) -> int:
-        return get_country_id(self.country)
+        return get_country_id(self.originID)
 
     def get_country_name(self) -> str:
-        return get_country_name(self.country)
+        return get_country_name(self.originID)
 
 #
 # Recipe Model
