@@ -1,12 +1,27 @@
 from django.contrib import admin
-from .models import Recipe, Comment, Rating
+from world_recipe.models import UserProfile, Recipe, Comment, Rating, RecipeImages
+
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'originID', 'profile_picture')
 
 class RecipeAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
+    list_display = ('title', 'authorID', 'originID', 'meal_type')
+    list_filter = ('meal_type', 'originID')
+    search_fields = ['title', 'ingredients']
 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('recipeID', 'userID', 'timestamp', 'content')
+    list_filter = ('timestamp',)
+
+class RatingAdmin(admin.ModelAdmin):
+    list_display = ('recipeID', 'userID', 'rating')
+    list_filter = ('rating',)
+
+class RecipeImagesAdmin(admin.ModelAdmin):
+    list_display = ('recipe', 'image')
+
+admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Comment)
-admin.site.register(Rating)
-
-
-
+admin.site.register(Comment, CommentAdmin)
+admin.site.register(Rating, RatingAdmin)
+admin.site.register(RecipeImages, RecipeImagesAdmin)
