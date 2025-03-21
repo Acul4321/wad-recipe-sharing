@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
 from django.shortcuts import redirect, reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from world_recipe.forms import UserForm, UserProfileForm, ProfileEditForm, RecipeForm
 from world_recipe.models import UserProfile, Recipe, Comment, Rating
 from utils import COUNTRIES, get_country_name, get_country_id
@@ -119,7 +119,24 @@ def add_recipe(request):
     return render(request, 'world_recipe/add_recipe.html', {'form': form})
 
 def search(request):
-    return HttpResponse("Search page")
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        query = request.GET.get('q', '')
+        recipes = Recipe.objects.filter(title__icontains=query)[:5]
+        
+        results = []
+        for recipe in recipes:
+            results.append({
+                'title': recipe.title,
+                'country': slugify(recipe.get_country_name()),
+                'meal_type': slugify(recipe.get_meal_type()),
+                'slug': recipe.slug,
+                'image': recipe.image.url if recipe.image else None
+            })
+        
+        return JsonResponse({'recipes': results})
+    
+    # Handle non-AJAX requests here if needed
+    return render(request, 'world_recipe/search.html')
 
 def country(request, regionID):
     context_dict ={}
