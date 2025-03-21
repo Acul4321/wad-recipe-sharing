@@ -49,7 +49,7 @@ class Recipe(models.Model):
     meal_type = models.CharField(max_length=2, choices=MealType.choices, blank=False)
     image = models.ImageField(upload_to='recipe_images/', blank=True, null=True)
     title = models.CharField(max_length=200, blank=False)  # Add title field
-    timestamp = models.DateTimeField(default=timezone.now)
+    publish_date = models.DateTimeField(default=timezone.now)
     ingredients = models.TextField(blank=False)
     instructions = models.TextField(blank=False)
     slug = models.SlugField(unique=True)

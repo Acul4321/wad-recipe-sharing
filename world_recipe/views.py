@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from world_recipe.forms import UserForm, UserProfileForm
 from world_recipe.models import UserProfile, Recipe, Comment, Rating
 from utils import COUNTRIES, get_country_name, get_country_id
+from django.db.models import Avg
 
 def index(request):
     context_dict ={}

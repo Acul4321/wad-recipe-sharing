@@ -8,7 +8,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE',
                       'wad_recipe_sharing.settings')
 django.setup()
 from world_recipe.models import Recipe, Rating
-from world_recipe.utils import COUNTRIES
+from utils import COUNTRIES
 
 def populate():
     recipes = [
