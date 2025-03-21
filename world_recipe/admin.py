@@ -1,5 +1,5 @@
 from django.contrib import admin
-from world_recipe.models import UserProfile, Recipe, Comment, Rating, RecipeImages
+from world_recipe.models import UserProfile, Recipe, Comment, Rating
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'originID', 'profile_picture')
@@ -17,11 +17,8 @@ class RatingAdmin(admin.ModelAdmin):
     list_display = ('recipeID', 'userID', 'rating')
     list_filter = ('rating',)
 
-class RecipeImagesAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'image')
 
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Rating, RatingAdmin)
-admin.site.register(RecipeImages, RecipeImagesAdmin)

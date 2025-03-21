@@ -7,7 +7,7 @@ from django.contrib.auth import login as auth_login
 from django.shortcuts import redirect, reverse
 from django.http import HttpResponse
 from world_recipe.forms import UserForm, UserProfileForm
-from world_recipe.models import UserProfile, Recipe, Comment, Rating, RecipeImages
+from world_recipe.models import UserProfile, Recipe, Comment, Rating
 from utils import COUNTRIES, get_country_name, get_country_id
 
 def index(request):
