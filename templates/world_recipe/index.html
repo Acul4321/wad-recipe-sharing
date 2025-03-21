@@ -10,6 +10,94 @@
     <p style="font-size: 1.5em; margin-top: 20px;">Cooking up a cultural cuisine at your home is easier than you think..</p>
     <p style="font-size: 1.5em; margin-top: 20px;">Where will you travel today?</p>
 
+    <!-- Add map container -->
+    <div id="recipe-map" style="height: 400px; width: 100%; margin: 20px 0;"></div>
+
+    <!-- Initialize map with recipe locations -->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
+    <script>
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById('recipe-map'), {
+                zoom: 2,
+                center: { lat: 20, lng: 0 }
+            });
+
+            // Create a Set to track unique recipe slugs
+            const seenRecipes = new Set();
+            const recipes = [];
+
+            // Add recipes while checking for duplicates
+            [
+                {% for recipe in most_recent_recipes %}
+                    {
+                        title: "{{ recipe.title }}",
+                        country: "{{ recipe.get_country_name }}",
+                        url: "{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}",
+                        slug: "{{ recipe.slug }}"
+                    },
+                {% endfor %}
+                {% for recipe in most_rated_recipes %}
+                    {
+                        title: "{{ recipe.title }}",
+                        country: "{{ recipe.get_country_name }}",
+                        url: "{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}",
+                        slug: "{{ recipe.slug }}"
+                    },
+                {% endfor %}
+            ].forEach(recipe => {
+                if (!seenRecipes.has(recipe.slug)) {
+                    seenRecipes.add(recipe.slug);
+                    recipes.push(recipe);
+                }
+            });
+
+            // Create a map of unique countries
+            const uniqueCountries = new Map();
+            recipes.forEach(recipe => {
+                if (!uniqueCountries.has(recipe.country)) {
+                    uniqueCountries.set(recipe.country, []);
+                }
+                uniqueCountries.get(recipe.country).push(recipe);
+            });
+
+            // Geocode each country and add markers
+            uniqueCountries.forEach((recipes, country) => {
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ address: country }, (results, status) => {
+                    if (status === 'OK') {
+                        const marker = new google.maps.Marker({
+                            map: map,
+                            position: results[0].geometry.location,
+                            title: country
+                        });
+
+                        // Create info window content
+                        const contentString = `
+                            <div class="map-info-window">
+                                <h3>${country}</h3>
+                                <ul>
+                                    ${recipes.map(recipe => `
+                                        <li><a href="${recipe.url}">${recipe.title}</a></li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        `;
+
+                        const infowindow = new google.maps.InfoWindow({
+                            content: contentString
+                        });
+
+                        marker.addListener('click', () => {
+                            infowindow.open(map, marker);
+                        });
+                    }
+                });
+            });
+        }
+
+        window.onload = initMap;
+    </script>
+
     <h2>Most Recent Recipes</h2>
     <ul>
         {% for recipe in most_recent_recipes %}
