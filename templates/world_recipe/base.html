@@ -21,10 +21,13 @@
                 <img src="{% static 'images/default.png' %}" alt="World Recipe Logo" height="30">
             </a>
 
-            {% comment %} <form method="GET" action="{% url 'world_recipe:search' %}">
-                <input type="search" placeholder="Search recipes..." name="q">
-                <button type="submit">Search</button>
-            </form> {% endcomment %}
+            <div class="search-container">
+                <input type="search" 
+                       id="recipe-search" 
+                       placeholder="Search recipes..." 
+                       autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
 
             <div>
                 {% if user.is_authenticated %}
@@ -82,6 +85,63 @@
                         content.hidden = !content.hidden;
                     });
                 }
+            });
+        </script>
+
+        {% comment %} Search bar {% endcomment %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('recipe-search');
+                const searchResults = document.getElementById('search-results');
+                let timeoutId;
+
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(timeoutId);
+                    
+                    if (this.value.length < 2) {
+                        searchResults.style.display = 'none';
+                        return;
+                    }
+
+                    timeoutId = setTimeout(() => {
+                        fetch(`/world-recipe/search/?q=${encodeURIComponent(this.value)}`, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            searchResults.innerHTML = '';
+                            if (data.recipes.length > 0) {
+                                data.recipes.forEach(recipe => {
+                                    const div = document.createElement('div');
+                                    div.className = 'search-result-item';
+                                    div.innerHTML = `
+                                        <a href="/world-recipe/recipe/${recipe.country}/${recipe.meal_type}/${recipe.slug}/">
+                                            <img src="${recipe.image || '/static/images/default.png'}" alt="${recipe.title}">
+                                            <div>
+                                                <h4>${recipe.title}</h4>
+                                                <p>${recipe.country}</p>
+                                            </div>
+                                        </a>
+                                    `;
+                                    searchResults.appendChild(div);
+                                });
+                                searchResults.style.display = 'block';
+                            } else {
+                                searchResults.innerHTML = '<div class="no-results">No recipes found</div>';
+                                searchResults.style.display = 'block';
+                            }
+                        });
+                    }, 300);
+                });
+
+                // Hide results when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.style.display = 'none';
+                    }
+                });
             });
         </script>
     </body>
