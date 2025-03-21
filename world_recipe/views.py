@@ -6,11 +6,12 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
 from django.shortcuts import redirect, reverse
 from django.http import HttpResponse
-from world_recipe.forms import UserForm, UserProfileForm, ProfileEditForm
+from world_recipe.forms import UserForm, UserProfileForm, ProfileEditForm, RecipeForm
 from world_recipe.models import UserProfile, Recipe, Comment, Rating
 from utils import COUNTRIES, get_country_name, get_country_id
 from django.db.models import Avg
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 def index(request):
     context_dict ={}
@@ -101,7 +102,21 @@ def profile(request, username):
 
 @login_required
 def add_recipe(request):
-    return HttpResponse("Add recipe page")
+    if request.method == 'POST':
+        form = RecipeForm(request.POST, request.FILES)
+        if form.is_valid():
+            recipe = form.save(commit=False)
+            recipe.authorID = request.user
+            recipe.save()
+            return redirect('world_recipe:recipe', 
+                            country=slugify(recipe.get_country_name()),
+                            meal_type=slugify(recipe.get_meal_type()),
+                            recipe_name=recipe.slug
+                            )
+    else:
+        form = RecipeForm()
+    
+    return render(request, 'world_recipe/add_recipe.html', {'form': form})
 
 def search(request):
     return HttpResponse("Search page")
@@ -118,19 +133,39 @@ def country(request, regionID):
 def meal_type(request, country_slug, meal_type_slug):
     return HttpResponse(f"{meal_type} recipes from {country_slug}")
 
-def recipe(request, recipe_id, recipe_slug):
+def recipe(request, country, meal_type, recipe_name):
     try:
-        recipe = get_object_or_404(Recipe, pk = recipe_id, slug=recipe_slug)
+        recipe = get_object_or_404(Recipe, slug=recipe_name)
         
-        return render(request, 'world_recipe/show_recipe.html')
+        # Verify the URL parameters match the recipe
+        if (slugify(recipe.get_country_name()) != country or 
+            slugify(recipe.get_meal_type()) != meal_type):
+            return HttpResponse("Recipe not found")
+            
+        context = {
+            'recipe': recipe,
+            'country': country,
+            'meal_type': meal_type,
+        }
+        return render(request, 'world_recipe/recipe.html', context)
     except Recipe.DoesNotExist:
-        # Handle case where the recipe is not found
-        return HttpResponse("recipe not found")
+        return HttpResponse("Recipe not found")
 
 @login_required
 def comment(request, country_slug, meal_type_slug, recipe_name_slug):
     return HttpResponse(f"Add comment to {recipe_name_slug}")
 
 @login_required
-def delete(request, country_slug, meal_type_slug, recipe_name_slug):
-    return HttpResponse(f"Delete {recipe_name_slug}")
+def delete(request, country, meal_type, recipe_name):
+    try:
+        recipe = get_object_or_404(Recipe, slug=recipe_name)
+        
+        # check if user is the author
+        if request.user != recipe.authorID:
+            return HttpResponse("You are not authorized to delete this recipe")
+            
+        recipe.delete()
+        return redirect('world_recipe:index')
+        
+    except Recipe.DoesNotExist:
+        return HttpResponse("Recipe not found")

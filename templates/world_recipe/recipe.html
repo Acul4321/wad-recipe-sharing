@@ -1,1 +1,47 @@
-<h1>Hi</h1>
+{% extends 'world_recipe/base.html' %}
+{% load static %}
+
+{% block title %}{{ recipe.title }}{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="recipe-header">
+        {% if recipe.image %}
+            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe-image" style="max-width: 500px;">
+        {% endif %}
+        <h1>{{ recipe.title }}</h1>
+        <div class="recipe-meta">
+            <p>By: <a href="{% url 'world_recipe:profile' recipe.authorID.username %}">{{ recipe.authorID.username }}</a></p>
+            <p>Origin: {{ recipe.get_country_name }}</p>
+            <p>Type: {{ recipe.get_meal_type }}</p>
+            <p>Published: {{ recipe.publish_date|date:"F j, Y" }}</p>
+        </div>
+    </div>
+
+    <div class="recipe-content">
+        <h2>Ingredients</h2>
+        <ul>
+            {% for ingredient in recipe.get_ingredients_list %}
+                <li>{{ ingredient }}</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Instructions</h2>
+        <ol>
+            {% for step in recipe.get_instructions_list %}
+                <li>{{ step }}</li>
+            {% endfor %}
+        </ol>
+    </div>
+
+    {% if user == recipe.authorID %}
+        <div class="recipe-actions">
+            <a href="{% url 'world_recipe:delete' country=country meal_type=meal_type recipe_name=recipe.slug %}" 
+               class="btn btn-danger"
+               onclick="return confirm('Are you sure you want to delete this recipe?')">
+                Delete Recipe
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
