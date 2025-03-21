@@ -48,7 +48,7 @@ class Recipe(models.Model):
     originID = models.IntegerField(validators=[MaxValueValidator(len(COUNTRIES)-1), MinValueValidator(0)], blank=False) #range of countries indexes
     meal_type = models.CharField(max_length=2, choices=MealType.choices, blank=False)
     image = models.ImageField(upload_to='recipe_images/', blank=True, null=True)
-    title = models.CharField(max_length=200, blank=False)  # Add title field
+    title = models.CharField(max_length=200, blank=False) 
     publish_date = models.DateTimeField(default=timezone.now)
     ingredients = models.TextField(blank=False)
     instructions = models.TextField(blank=False)
@@ -58,7 +58,15 @@ class Recipe(models.Model):
         return self.title
     
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
+        base_slug = slugify(self.title)
+        author_slug = slugify(self.authorID.username)
+        self.slug = f"{base_slug}-{author_slug}"
+
+        # this is for when a recipe has the same slug
+        n = 1
+        while Recipe.objects.filter(slug=self.slug).exists():
+            self.slug = f"{base_slug}-{author_slug}-{n}"
+            n += 1
         super(Recipe, self).save(*args, **kwargs)
 
     def average_rating(self) -> float:

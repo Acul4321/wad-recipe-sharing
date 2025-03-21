@@ -10,6 +10,7 @@
         <h2>{{ selected_user.username }}'s Profile</h2>
         {% if request.user == selected_user %}
             <button id="edit-toggle" class="btn btn-primary">Edit Profile</button>
+            <a href="{% url 'world_recipe:add_recipe' %}" class="btn btn-success">Add Recipe</a>
         {% endif %}
     </div>
 
