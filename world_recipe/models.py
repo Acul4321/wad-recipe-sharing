@@ -58,7 +58,7 @@ class Recipe(models.Model):
         return self.title
     
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.title)
         super(Recipe, self).save(*args, **kwargs)
 
     def average_rating(self) -> float:
@@ -71,10 +71,13 @@ class Recipe(models.Model):
         return [x.strip() for x in self.instructions.split('\n') if x.strip()]
     
     def get_country_id(self) -> int:
-        return get_country_id(self.country)
+        return get_country_id(self.originID)
     
     def get_country_name(self) -> str:
-        return get_country_name(self.country)
+        return get_country_name(self.originID)
+    
+    def get_meal_type(self) -> str:
+        return dict(MealType.choices)[self.meal_type]
 
 #
 # Comment Model

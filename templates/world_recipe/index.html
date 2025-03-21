@@ -14,18 +14,18 @@
     <ul>
         {% for recipe in most_recent_recipes %}
             <li>
-                <a href="{% url 'world_recipe:show_recipe' recipe_id=recipe.id recipe_slug=recipe.slug %}">
+                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
                     {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" style="width: 200px; height: 150px;">
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
                     {% else %}
                         <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
                     {% endif %}
                 </a><br>
-                <strong>{{ recipe.name }}</strong><br>
-                <a href="{% url 'world_recipe:recipes_by_region' regionID=recipe.regionID %}">
+                <strong>{{ recipe.title }}</strong><br>
+                <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
                     Region: {{ recipe.get_country_name }}
                 </a><br>
-                <a href="{% url 'world_recipe:show_recipe' recipe_id=recipe.id recipe_slug=recipe.slug %}">View Recipe</a>
+                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
             </li>
         {% empty %}
             <p>No recent recipes found. </p>
@@ -37,17 +37,17 @@
     <ul>
         {% for recipe in most_rated_recipes %}
             <li>
-                <a href="{% url 'world_recipe:show_recipe' recipe_id=recipe.id recipe_slug=recipe.slug %}">
+                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
                     {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" style="width: 200px; height: 150px;">
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
                     {% else %}
                         <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
                     {% endif %}
                 </a><br>
-                <strong>{{ recipe.name }}</strong><br>
+                <strong>{{ recipe.title }}</strong><br>
                 Region: {{ recipe.get_country_name }}<br>
                 Rating: {{ recipe.avg_rating|floatformat:1 }}<br>
-                <a href="{% url 'world_recipe:show_recipe' recipe_id=recipe.id recipe_slug=recipe.slug %}">View Recipe</a>
+                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
             </li>
         {% empty %}
             <p>No rated recipes found. </p>

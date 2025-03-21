@@ -1,115 +1,118 @@
 import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wad_recipe_sharing.settings')
+
 import django
-from datetime import datetime
-from django.utils import timezone
-from django.db.models import Avg
-import random
-os.environ.setdefault('DJANGO_SETTINGS_MODULE',
-                      'wad_recipe_sharing.settings')
 django.setup()
-from world_recipe.models import Recipe, Rating
+
+from django.core.files import File
+from django.contrib.auth.models import User
+from world_recipe.models import Recipe, Rating, UserProfile
 from utils import COUNTRIES
+import random
+from datetime import datetime, timedelta
 
-def populate():
-    recipes = [
-        {'name': 'Empanadas', 'regionID': 1, 'meal_type': 'Snack',
-         'ingredients': ['Dough', 'Beef', 'Onion', 'Egg'],
-         'instructions': [
-             '1. Prepare the beef filling by sautéing the onion and beef together.',
-             '2. Roll out the dough and cut it into circles.',
-             '3. Place a spoonful of the filling onto the dough circle.',
-             '4. Fold the dough over and crimp the edges to seal.',
-             '5. Bake at 375°F (190°C) until golden brown and crispy.'
-         ], 'publish_date': timezone.now(), 'image': 'recipe_images/empanadas.jpg'},
+def create_user(username, password, origin_id):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = User.objects.create_user(username=username, password=password)
+        UserProfile.objects.create(user=user, originID=origin_id)
+    return user
 
-        {'name': 'Vegemite Toast', 'regionID': 2, 'meal_type': 'Breakfast',
-         'ingredients': ['Bread', 'Butter', 'Vegemite'],
-         'instructions': [
-             '1. Toast the bread until golden brown.',
-             '2. Spread a thin layer of butter on the toast.',
-             '3. Spread Vegemite over the buttered toast.',
-             '4. Serve with a hot beverage like tea or coffee.'
-         ], 'publish_date': timezone.now(), 'image': 'recipe_images/vegemite_toast.jpg'},
-
-        {'name': 'Belgian Waffles', 'regionID': 3, 'meal_type': 'Breakfast',
-         'ingredients': ['Flour', 'Eggs', 'Milk', 'Sugar'],
-         'instructions': [
-             '1. Mix the flour, sugar, and eggs in a bowl.',
-             '2. Add milk and stir until the batter is smooth.',
-             '3. Preheat the waffle iron and lightly grease it.',
-             '4. Pour batter into the waffle iron and cook until golden brown.',
-             '5. Serve with toppings like syrup, whipped cream, or fresh berries.'
-         ], 'publish_date': timezone.now(), 'image': 'recipe_images/belgian_waffles.jpg'},
-
-        {'name': 'Feijoada', 'regionID': 4, 'meal_type': 'Lunch',
-         'ingredients': ['Black beans', 'Chicken', 'Rice', 'Oranges'],
-         'instructions': [
-             '1. Cook the black beans in water until tender.',
-             '2. Add chicken pieces and cook until fully done.',
-             '3. Serve the beans and chicken over cooked rice.',
-             '4. Garnish with fresh orange slices for a citrusy kick.'
-         ], 'publish_date': timezone.now(), 'image': 'recipe_images/feijoada.jpg'},
-
-        {'name': 'Poutine', 'regionID': 5, 'meal_type': 'Dinner',
-         'ingredients': ['Fries', 'Cheese curds', 'Gravy'],
-         'instructions': [
-             '1. Fry the potatoes to make crispy fries.',
-             '2. Melt cheese curds on top of the hot fries.',
-             '3. Pour hot gravy over the fries and cheese curds.',
-             '4. Serve immediately while hot and crispy.'
-         ], 'publish_date': timezone.now(), 'image': 'recipe_images/poutine.jpg'},
-
-        {'name': 'Spaghetti Carbonara', 'regionID': 14, 'meal_type': 'Dinner',
-         'ingredients': ['Spaghetti', 'Bacon', 'Eggs', 'Parmesan cheese', 'Black pepper'],
-         'instructions': [
-             '1. Cook the spaghetti in salted boiling water according to package instructions.',
-             '2. While the pasta is cooking, fry the bacon until crispy.',
-             '3. In a bowl, whisk together the eggs, grated Parmesan cheese, and black pepper.',
-             '4. Drain the pasta, reserving a bit of pasta water.',
-             '5. Combine the hot pasta with the bacon and egg mixture, tossing until creamy.',
-             '6. If the sauce is too thick, add some reserved pasta water to thin it.'
-         ], 'publish_date': timezone.now(), 'image': 'recipe_images/spaghetti_carbonara.jpg'}
-    ]
-
-    for recipe_data in recipes:
-        recipe = add_recipe(recipe_data['name'], recipe_data['regionID'], recipe_data['meal_type'],
-                            recipe_data['ingredients'], recipe_data['instructions'], recipe_data['publish_date'], recipe_data['image'])
-        for i in range(random.randint(3,7)):
-            add_rating(recipe, random.randint(1, 5))
+def add_recipe(title, author, origin_id, meal_type, ingredients, instructions, image_name=None):
+    recipe = Recipe.objects.get_or_create(
+        title=title,
+        authorID=author,
+        originID=origin_id,
+        meal_type=meal_type,
+        ingredients=ingredients,
+        instructions=instructions
+    )[0]
     
-for recipe in Recipe.objects.all():
-        ratings = Rating.objects.filter(recipe=recipe)
-        print(f'{recipe.name} from {recipe.get_country_name()}')
+    if image_name:
+        image_path = os.path.join('population_images', image_name)
+        if os.path.exists(image_path):
+            with open(image_path, 'rb') as f:
+                recipe.image.save(image_name, File(f), save=True)
     
-    
-def add_recipe(name, regionID, meal_type, ingredients, instructions, publish_date, image):
-    recipe, created = Recipe.objects.get_or_create(
-        name=name, 
-        regionID=regionID,
-        defaults={ 
-            'meal_type': meal_type,
-            'ingredients': ingredients,  
-            'instructions': instructions, 
-            'publish_date': publish_date
-        }
-    )
-    if not created:  
-        recipe.meal_type = meal_type
-        recipe.ingredients = ingredients
-        recipe.instructions = instructions
-        recipe.publish_date = publish_date
-        recipe.image = image
-
-        recipe.save()
-
     return recipe
 
+def add_ratings(recipe, num_ratings):
+    users = list(User.objects.all())
+    if len(users) < num_ratings:
+        return
+    
+    # Get random users for ratings
+    rating_users = random.sample(users, num_ratings)
+    
+    for user in rating_users:
+        Rating.objects.get_or_create(
+            recipeID=recipe,
+            userID=user,
+            rating=random.randint(1, 5)
+        )
 
+def populate():
+    # Create test users
+    users = [
+        {'username': 'john_doe', 'password': 'testpass123', 'origin': 168},  # UK
+        {'username': 'alice_smith', 'password': 'testpass123', 'origin': 169},  # USA
+        {'username': 'mario_rossi', 'password': 'testpass123', 'origin': 76},  # Italy
+    ]
+    
+    created_users = []
+    for user_data in users:
+        user = create_user(user_data['username'], user_data['password'], user_data['origin'])
+        created_users.append(user)
 
-def add_rating(recipe, rating):
-    Rating.objects.create(recipe=recipe, rating=rating)
+    # Recipe data
+    recipes = [
+        {
+            'title': 'Classic Spaghetti Carbonara',
+            'author': created_users[2],  # mario_rossi
+            'origin_id': 76,  # Italy
+            'meal_type': 'DN',  # Dinner
+            'ingredients': '400g spaghetti\n200g guanciale\n4 egg yolks\n100g pecorino romano\nBlack pepper',
+            'instructions': '1. Cook pasta\n2. Fry guanciale\n3. Mix eggs and cheese\n4. Combine all ingredients',
+            'image': 'carbonara.jpg',
+            'num_ratings': 5
+        },
+        {
+            'title': 'English Breakfast',
+            'author': created_users[0],  # john_doe
+            'origin_id': 168,  # UK
+            'meal_type': 'BF',  # Breakfast
+            'ingredients': 'Eggs\nBacon\nSausages\nBeans\nMushrooms\nTomatoes\nToast',
+            'instructions': '1. Fry bacon and sausages\n2. Cook eggs\n3. Heat beans\n4. Serve hot',
+            'image': 'english_breakfast.jpg',
+            'num_ratings': 3
+        },
+        {
+            'title': 'American Burger',
+            'author': created_users[1],  # alice_smith
+            'origin_id': 169,  # USA
+            'meal_type': 'LU',  # Lunch
+            'ingredients': 'Beef patty\nBurger buns\nLettuce\nTomato\nCheese\nOnion',
+            'instructions': '1. Grill the patty\n2. Toast the buns\n3. Assemble burger\n4. Add condiments',
+            'image': 'burger.jpg',
+            'num_ratings': 4
+        }
+    ]
 
+    # Create recipes and their ratings
+    for recipe_data in recipes:
+        recipe = add_recipe(
+            title=recipe_data['title'],
+            author=recipe_data['author'],
+            origin_id=recipe_data['origin_id'],
+            meal_type=recipe_data['meal_type'],
+            ingredients=recipe_data['ingredients'],
+            instructions=recipe_data['instructions'],
+            image_name=recipe_data['image']
+        )
+        add_ratings(recipe, recipe_data['num_ratings'])
 
 if __name__ == '__main__':
     print('Starting World Recipe population script...')
     populate()
+    print('Population complete!')
