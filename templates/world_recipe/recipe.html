@@ -43,5 +43,199 @@
             </a>
         </div>
     {% endif %}
+
+    <div class="comments-section mt-5">
+        <h3>Comments</h3>
+        
+        {% if user.is_authenticated %}
+            <form id="comment-form" class="mb-4">
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea class="form-control" id="comment-content" rows="3" placeholder="Write a comment..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+            </form>
+        {% else %}
+            <p>Please <a href="{% url 'world_recipe:login' %}">login</a> to leave a comment.</p>
+        {% endif %}
+
+        <div id="comments-container">
+            {% for comment in recipe.comment_set.filter|dictsort:"timestamp" %}
+                {% if not comment.parent %}  <!-- Only show root comments -->
+                    <div class="comment" id="comment-{{ comment.id }}">
+                        <div class="comment-header">
+                            <strong>{{ comment.userID.username }}</strong>
+                            <small>{{ comment.timestamp|timesince }} ago</small>
+                        </div>
+                        <div class="comment-content">
+                            {{ comment.content }}
+                        </div>
+                        {% if user.is_authenticated %}
+                            <div class="comment-actions">
+                                <button class="btn btn-sm btn-link reply-btn" 
+                                        data-comment-id="{{ comment.id }}">Reply</button>
+                            </div>
+                            <div class="reply-form" id="reply-form-{{ comment.id }}" style="display: none;">
+                                <textarea class="form-control mb-2" rows="2"></textarea>
+                                <button class="btn btn-sm btn-primary submit-reply" 
+                                        data-comment-id="{{ comment.id }}">Submit Reply</button>
+                                <button class="btn btn-sm btn-secondary cancel-reply">Cancel</button>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="replies" id="replies-{{ comment.id }}">
+                            {% for reply in comment.comment_set.all|dictsort:"timestamp" %}
+                                <div class="reply" id="comment-{{ reply.id }}">
+                                    <div class="comment-header">
+                                        <strong>{{ reply.userID.username }}</strong>
+                                        <small>{{ reply.timestamp|timesince }} ago</small>
+                                    </div>
+                                    <div class="comment-content">
+                                        {{ reply.content }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Main comment form submission
+    document.getElementById('comment-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const content = document.getElementById('comment-content').value;
+        submitComment(content);
+    });
+
+    // Reply button handlers
+    document.querySelectorAll('.reply-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            document.querySelectorAll('.reply-form').forEach(form => form.style.display = 'none');
+            document.getElementById(`reply-form-${commentId}`).style.display = 'block';
+        });
+    });
+
+    // Cancel reply handlers
+    document.querySelectorAll('.cancel-reply').forEach(button => {
+        button.addEventListener('click', function() {
+            this.closest('.reply-form').style.display = 'none';
+        });
+    });
+
+    // Submit reply handlers
+    document.querySelectorAll('.submit-reply').forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            const content = this.closest('.reply-form').querySelector('textarea').value;
+            submitComment(content, commentId);
+        });
+    });
+
+    function submitComment(content, parentId = null) {
+        fetch('{% url "world_recipe:comment" country=country meal_type=meal_type recipe_name=recipe.slug %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({
+                content: content,
+                parent_id: parentId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Add new comment to the page
+                const comment = createCommentElement(data.comment);
+                if (parentId) {
+                    document.getElementById(`replies-${parentId}`).appendChild(comment);
+                    document.getElementById(`reply-form-${parentId}`).style.display = 'none';
+                    document.getElementById(`reply-form-${parentId}`).querySelector('textarea').value = '';
+                } else {
+                    document.getElementById('comments-container').insertBefore(
+                        comment, 
+                        document.getElementById('comments-container').firstChild
+                    );
+                    document.getElementById('comment-content').value = '';
+                }
+            }
+        });
+    }
+
+    function createCommentElement(comment) {
+        const div = document.createElement('div');
+        div.className = comment.parent_id ? 'reply' : 'comment';
+        div.id = `comment-${comment.id}`;
+        div.innerHTML = `
+            <div class="comment-header">
+                <strong>${comment.username}</strong>
+                <small>just now</small>
+            </div>
+            <div class="comment-content">
+                ${comment.content}
+            </div>
+            ${comment.parent_id ? '' : `
+                <div class="comment-actions">
+                    <button class="btn btn-sm btn-link reply-btn" data-comment-id="${comment.id}">Reply</button>
+                </div>
+                <div class="reply-form" id="reply-form-${comment.id}" style="display: none;">
+                    <textarea class="form-control mb-2" rows="2"></textarea>
+                    <button class="btn btn-sm btn-primary submit-reply" data-comment-id="${comment.id}">Submit Reply</button>
+                    <button class="btn btn-sm btn-secondary cancel-reply">Cancel</button>
+                </div>
+                <div class="replies" id="replies-${comment.id}"></div>
+            `}
+        `;
+
+        // Attach event listeners if this is a root comment
+        if (!comment.parent_id) {
+            setTimeout(() => {
+                attachEventListenersToComment(div);
+            }, 0);
+        }
+
+        return div;
+    }
+
+    // for newly added comments to ensure proper event listening
+    function attachEventListenersToComment(commentElement) {
+        // Reply button
+        const replyBtn = commentElement.querySelector('.reply-btn');
+        if (replyBtn) {
+            replyBtn.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                document.querySelectorAll('.reply-form').forEach(form => form.style.display = 'none');
+                document.getElementById(`reply-form-${commentId}`).style.display = 'block';
+            });
+        }
+
+        // Submit reply button
+        const submitReplyBtn = commentElement.querySelector('.submit-reply');
+        if (submitReplyBtn) {
+            submitReplyBtn.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const content = this.closest('.reply-form').querySelector('textarea').value;
+                submitComment(content, commentId);
+            });
+        }
+
+        // Cancel reply button
+        const cancelReplyBtn = commentElement.querySelector('.cancel-reply');
+        if (cancelReplyBtn) {
+            cancelReplyBtn.addEventListener('click', function() {
+                this.closest('.reply-form').style.display = 'none';
+            });
+        }
+    }
+});
+</script>
 {% endblock %}

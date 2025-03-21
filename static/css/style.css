@@ -1,3 +1,4 @@
+/* search bar */
 .search-container {
     position: relative;
     display: inline-block;
@@ -62,4 +63,40 @@
     padding: 10px;
     text-align: center;
     color: #666;
+}
+
+/* Comment Styles */
+.comments-section {
+    margin-top: 2rem;
+}
+
+.comment {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.comment-header {
+    margin-bottom: 0.5rem;
+}
+
+.comment-content {
+    margin-bottom: 0.5rem;
+}
+
+.replies {
+    margin-left: 2rem;
+}
+
+.reply {
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+    border-left: 3px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.reply-form {
+    margin-left: 2rem;
+    margin-top: 0.5rem;
 }

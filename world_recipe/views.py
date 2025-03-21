@@ -12,6 +12,7 @@ from utils import COUNTRIES, get_country_name, get_country_id
 from django.db.models import Avg
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+import json
 
 def index(request):
     context_dict ={}
@@ -169,8 +170,35 @@ def recipe(request, country, meal_type, recipe_name):
         return HttpResponse("Recipe not found")
 
 @login_required
-def comment(request, country_slug, meal_type_slug, recipe_name_slug):
-    return HttpResponse(f"Add comment to {recipe_name_slug}")
+def comment(request, country, meal_type, recipe_name):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            content = data.get('content')
+            parent_id = data.get('parent_id')
+            
+            recipe = get_object_or_404(Recipe, slug=recipe_name)
+            
+            comment = Comment.objects.create(
+                recipeID=recipe,
+                userID=request.user,
+                content=content,
+                parent_id=parent_id
+            )
+            
+            return JsonResponse({
+                'status': 'success',
+                'comment': {
+                    'id': comment.id,
+                    'content': comment.content,
+                    'username': comment.userID.username,
+                    'parent_id': comment.parent_id
+                }
+            })
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 @login_required
 def delete(request, country, meal_type, recipe_name):
