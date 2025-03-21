@@ -32,7 +32,7 @@
             <div>
                 {% if user.is_authenticated %}
                     <div class="dropdown">
-                        <img src="{{ MEDIA_URL }}{{ user.profile.picture.url }}" alt="Profile" width="30" height="30">
+                        <img src="{{ MEDIA_URL }}{{ user.userprofile.profile_picture.url }}" alt="Profile" width="30" height="30">
                         <div class="dropdown-content" hidden>
                             <a href="{% url 'world_recipe:profile' user.username %}">My Profile</a>
                             <a href="{% url 'world_recipe:logout' %}">Logout</a>
