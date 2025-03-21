@@ -13,16 +13,17 @@ from django.db.models import Avg
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 import json
+from django.conf import settings
 
 def index(request):
-    context_dict ={}
+    context_dict = {}
     most_recent_recipes = Recipe.objects.all().order_by('-publish_date')[:5]
     most_rated_recipes = Recipe.objects.annotate(avg_rating=Avg('rating__rating')).order_by('-avg_rating')[:5]
     
     context_dict['most_recent_recipes'] = most_recent_recipes
-    context_dict['most_rated_recipes']=most_rated_recipes
-    response = render(request, 'world_recipe/index.html', context_dict)
-    return response
+    context_dict['most_rated_recipes'] = most_rated_recipes
+    context_dict['google_maps_api_key'] = settings.GOOGLE_MAPS_API_KEY
+    return render(request, 'world_recipe/index.html', context_dict)
 
 def about(request):
     context_dict = {'message': 'World Recipe was created by Group 6C.'}

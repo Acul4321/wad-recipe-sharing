@@ -100,3 +100,32 @@
     margin-left: 2rem;
     margin-top: 0.5rem;
 }
+
+/* Map Styles */
+.map-info-window {
+    padding: 10px;
+    max-width: 300px;
+}
+
+.map-info-window h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.map-info-window ul {
+    margin: 0;
+    padding: 0 0 0 20px;
+}
+
+.map-info-window li {
+    margin: 5px 0;
+}
+
+.map-info-window a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.map-info-window a:hover {
+    text-decoration: underline;
+}

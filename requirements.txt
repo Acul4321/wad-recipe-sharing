@@ -5,3 +5,4 @@ Django==5.1.7
 pillow==11.1.0
 pytz==2025.1
 sqlparse==0.5.3
+python-dotenv==1.0.1
