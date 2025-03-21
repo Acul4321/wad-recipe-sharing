@@ -1,0 +1,15 @@
+<h1>Welcome to {{ country_name }}</h1>
+<p>Some description about the country and its recipes and here is where you can browse by meal and sort by options.</p>
+
+<h2>Recipes:</h2>
+<ul>
+    {% for recipe in recipes %}
+        <li>
+            <a href="{% url 'world_recipe:show_recipe' recipe_id=recipe.id recipe_slug=recipe.slug %}">
+                {{ recipe.name }}
+            </a>
+        </li>
+    {% empty %}
+        <p>No recipes found for this region.</p>
+    {% endfor %}
+</ul>

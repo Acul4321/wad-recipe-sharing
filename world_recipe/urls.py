@@ -5,6 +5,8 @@ app_name = 'world_recipe'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('about/', views.about, name='about'),
+
     # user auth
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),
