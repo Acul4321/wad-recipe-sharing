@@ -70,7 +70,7 @@ class Recipe(models.Model):
         super(Recipe, self).save(*args, **kwargs)
 
     def average_rating(self) -> float:
-        return Rating.objects.filter(post=self).aggregate(Avg("rating"))["rating__avg"] or 0
+        return Rating.objects.filter(recipeID=self).aggregate(Avg("rating"))["rating__avg"] or 0
     
     def get_ingredients_list(self):
         return [x.strip() for x in self.ingredients.split('\n') if x.strip()]
@@ -114,3 +114,18 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"{self.recipeID}: {self.rating}"
+
+#
+# Favorite Model
+#
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'recipe')
+
+    def __str__(self):
+        return f"{self.user.username} favorites {self.recipe.title}"

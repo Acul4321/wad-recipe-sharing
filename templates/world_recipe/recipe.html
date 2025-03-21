@@ -3,12 +3,70 @@
 
 {% block title %}{{ recipe.title }}{% endblock %}
 
+{% block head %}
+<style>
+    /* Remove all previous star styling as it's now in style.css */
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="container">
+    <!-- SVG star -->
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <defs>
+            <symbol id="star" viewBox="0 0 24 24">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </symbol>
+            <linearGradient id="half-fill" x1="0" x2="100%" y1="0" y2="0">
+                <stop offset="50%" stop-color="#ffd700"/>
+                <stop offset="50%" stop-color="#ccc"/>
+            </linearGradient>
+        </defs>
+    </svg>
+
     <div class="recipe-header">
         {% if recipe.image %}
             <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe-image" style="max-width: 500px;">
         {% endif %}
+        
+        <!-- Update rating system -->
+        <div class="rating-container">
+            <div class="current-rating">
+                <span class="stars">
+                    {% with ''|center:5 as range %}
+                    {% for _ in range %}
+                        <svg class="star" aria-hidden="true">
+                            <use href="#star" class="{% if forloop.counter <= recipe.average_rating %}star-filled{% else %}star-empty{% endif %}"/>
+                        </svg>
+                    {% endfor %}
+                    {% endwith %}
+                </span>
+                <span class="rating-value">({{ recipe.average_rating|default:0|floatformat:1 }})</span>
+            </div>
+            {% if user.is_authenticated %}
+                <div class="rate-recipe">
+                    <div class="rating-stars">
+                        {% for i in "12345" %}
+                            <svg class="star rating-star" data-rating="{{ forloop.counter }}" aria-hidden="true">
+                                <use href="#star" class="star-empty"/>
+                            </svg>
+                        {% endfor %}
+                    </div>
+                    <small>Click to rate</small>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if user.is_authenticated %}
+            <button id="favorite-btn" class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %}"
+                    data-recipe-id="{{ recipe.id }}">
+                <svg class="star" style="width: 24px; height: 24px;" aria-hidden="true">
+                    <use href="#star" class="{% if is_favorite %}star-filled{% else %}star-empty{% endif %}"/>
+                </svg>
+                <span>{% if is_favorite %}Unfavorite{% else %}Favorite{% endif %}</span>
+            </button>
+        {% endif %}
+        
         <h1>{{ recipe.title }}</h1>
         <div class="recipe-meta">
             <p>By: <a href="{% url 'world_recipe:profile' recipe.authorID.username %}">{{ recipe.authorID.username }}</a></p>
@@ -103,6 +161,84 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update display stars based on average rating
+    const avgRating = {{ recipe.average_rating|default:0|floatformat:1 }};
+    const displayStars = document.querySelector('.current-rating .stars').children;
+    updateStars(displayStars, avgRating);
+
+    {% if user.is_authenticated %}
+    const ratingStars = document.querySelectorAll('.rating-star');
+    
+    // Hover effects
+    ratingStars.forEach(star => {
+        star.addEventListener('mouseover', function() {
+            const rating = this.dataset.rating;
+            highlightStars(ratingStars, rating);
+        });
+    });
+
+    document.querySelector('.rating-stars').addEventListener('mouseout', function() {
+        ratingStars.forEach(star => {
+            const use = star.querySelector('use');
+            use.setAttribute('class', 'star-empty');
+        });
+    });
+
+    // Click to rate
+    ratingStars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.dataset.rating;
+            submitRating(rating);
+        });
+    });
+    {% endif %}
+
+    function updateStars(stars, rating) {
+        for(let i = 0; i < stars.length; i++) {
+            const use = stars[i].querySelector('use');
+            if(i < Math.floor(rating)) {
+                use.setAttribute('class', 'star-filled');
+            } else if(i === Math.floor(rating) && rating % 1 > 0) {
+                use.setAttribute('class', 'star-half');
+            } else {
+                use.setAttribute('class', 'star-empty');
+            }
+        }
+    }
+
+    function highlightStars(stars, rating) {
+        stars.forEach((star, index) => {
+            const use = star.querySelector('use');
+            use.setAttribute('class', index < rating ? 'star-filled' : 'star-empty');
+        });
+    }
+
+    function submitRating(rating) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch('{% url "world_recipe:rate" country=country meal_type=meal_type recipe_name=recipe.slug %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({
+                rating: rating
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                // Update the display rating
+                document.querySelector('.rating-value').textContent = `(${data.new_average.toFixed(1)})`;
+                updateStars(document.querySelector('.current-rating .stars').children, data.new_average);
+            }
+        });
+    }
+});
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -237,5 +373,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+</script>
+<script>
+    document.getElementById('favorite-btn').addEventListener('click', function(e) {
+        e.preventDefault();
+        const btn = this;
+        const starUse = btn.querySelector('use');
+        const spanText = btn.querySelector('span');
+        
+        fetch('{% url "world_recipe:toggle_favorite" country=country meal_type=meal_type recipe_name=recipe.slug %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (data.is_favorite) {
+                    btn.classList.remove('btn-outline-danger');
+                    btn.classList.add('btn-danger');
+                    starUse.setAttribute('class', 'star-filled');
+                    spanText.textContent = 'Unfavorite';
+                } else {
+                    btn.classList.remove('btn-danger');
+                    btn.classList.add('btn-outline-danger');
+                    starUse.setAttribute('class', 'star-empty');
+                    spanText.textContent = 'Favorite';
+                }
+            }
+        });
+    });
 </script>
 {% endblock %}
