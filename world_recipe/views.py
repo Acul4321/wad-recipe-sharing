@@ -215,3 +215,29 @@ def delete(request, country, meal_type, recipe_name):
         
     except Recipe.DoesNotExist:
         return HttpResponse("Recipe not found")
+
+@login_required
+def rate(request, country, meal_type, recipe_name):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            rating_value = int(data.get('rating'))
+            
+            recipe = get_object_or_404(Recipe, slug=recipe_name)
+            
+            # Create or update rating
+            rating = Rating.objects.update_or_create(
+                recipeID=recipe,
+                userID=request.user,
+                defaults={'rating': rating_value}
+            )[0]
+            
+            return JsonResponse({
+                'status': 'success', 
+                'new_average': recipe.average_rating()
+            })
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})

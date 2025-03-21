@@ -129,3 +129,49 @@
 .map-info-window a:hover {
     text-decoration: underline;
 }
+
+/* Star Rating System */
+.rating-container {
+    margin: 20px 0;
+}
+
+.stars {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.star {
+    width: 24px;
+    height: 24px;
+}
+
+.star-filled {
+    fill: #ffd700;
+}
+
+.star-empty {
+    fill: #ccc;
+}
+
+.star-half {
+    fill: url(#half-fill);
+}
+
+.rating-value {
+    margin-left: 10px;
+    color: #666;
+}
+
+.rate-recipe {
+    margin-top: 10px;
+}
+
+.rate-recipe .stars {
+    cursor: pointer;
+}
+
+.rate-recipe small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+}

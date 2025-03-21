@@ -70,7 +70,7 @@ class Recipe(models.Model):
         super(Recipe, self).save(*args, **kwargs)
 
     def average_rating(self) -> float:
-        return Rating.objects.filter(post=self).aggregate(Avg("rating"))["rating__avg"] or 0
+        return Rating.objects.filter(recipeID=self).aggregate(Avg("rating"))["rating__avg"] or 0
     
     def get_ingredients_list(self):
         return [x.strip() for x in self.ingredients.split('\n') if x.strip()]

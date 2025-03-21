@@ -25,5 +25,5 @@ urlpatterns = [
     path('recipe/<slug:country>/<slug:meal_type>/<slug:recipe_name>/', views.recipe, name='recipe'),
     path('recipe/<slug:country>/<slug:meal_type>/<slug:recipe_name>/add_comment/', views.comment, name='comment'), #user auth req, can comment as root(parent=null) or as a subcomment(parent=commentID)
     path('recipe/<slug:country>/<slug:meal_type>/<slug:recipe_name>/delete/', views.delete, name='delete'), #if on recipe made by currently logged in user
-
+    path('recipe/<slug:country>/<slug:meal_type>/<slug:recipe_name>/rate/', views.rate, name='rate'),
 ]
