@@ -32,8 +32,7 @@ def index(request):
     
 
 def about(request):
-    context_dict = {'message': 'World Recipe was created by Group 6C.'}
-    return render(request, 'world_recipe/about.html',context_dict)
+    return render(request, 'world_recipe/about.html')
 
 #
 # User auth
@@ -157,12 +156,26 @@ def country(request, country):
         # filtering recipes based on the country ID
         recipes = Recipe.objects.filter(originID=country_id)
         country_name = country
+        meal_type = request.GET.get('meal_type', None)
+        sort_by = request.GET.get('sort_by', None)
+
+        if meal_type and meal_type != 'all':
+            recipes = Recipe.objects.filter(originID=country_id, meal_type=meal_type)
+        else:
+            recipes = Recipe.objects.filter(originID=country_id)
+        
+        if sort_by == 'most_rated':
+            recipes = recipes.annotate(avg_rating=Avg('rating__rating')).order_by('-avg_rating')
+        elif sort_by == 'recently_published':
+            recipes = recipes.order_by('-publish_date')
        
         
         context_dict['country_name'] = country_name
         context_dict['recipes'] = recipes
+        context_dict['meal_type'] = meal_type
+        context_dict['sort_by'] = sort_by
     except Recipe.DoesNotExist:
-        context_dict['error_message'] = f"Country {country} not found."
+        context_dict['error_message'] = "country not found"
     
     return render(request, 'world_recipe/country.html', context_dict)
 

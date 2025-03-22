@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 
-{% extends 'world_recipe/base.html' %}
-
+{% extends "world_recipe/base.html" %}
 {% load static %}
 
 {% block title %}
@@ -9,11 +8,30 @@
 {% endblock %}
 
 {% block body %}
-    <h1>About World Recipe</h1>
-    <p>Welcome to the World Recipe app! Here you can explore and share amazing recipes from around the world.</p>
-    <div>
-        here is the about page. <br />
-        <strong>{{ message }}</strong>
-        
-    </div>
+    <h1>About World Recipes</h1>
+
+    <p>Cook delicious dishes easily and reliably.</p>
+
+    <p>On each recipe, you can select the number of required portions from 2 to 30, and the site will calculate the right amount of ingredients you need.</p>
+
+    <p>You can filter meal types like breakfast, dinner, lunch and dessert .
+       Also, browse by the most popular recipes, most recent, or by country cuisine like Indian, British using our interactive map!.</p>
+
+    <p><strong>Please Register & Use all our facilities totally for Free.</strong></p>
+
+    <p>Save your favorite recipes by clicking the Favorite button. Access them anytime in your Favorites section.</p>
+
+    <p>Want to share your own recipe? Use our easy Recipe Upload feature to add your delicious creations. 
+       You can either make them public to share with everyone or keep them private in your Favorites list.</p>
+
+    <h2>Make a Comment</h2>
+    <p>At the bottom right of each recipe, you’ll find a green Comment button. 
+       Here, you can leave a comment about the recipe. Comments will be displayed at the bottom of the recipe page.</p>
+
+    <p>The author of the recipe will need to approve comments before they are published. 
+       The author can also reply to your comments, and the latest comments will appear at the top.</p>
+
+    <h2>Ingredient Measurements</h2>
+    <p>We recommend converting all ingredients into gram measurements wherever possible for accuracy and consistency. 
+       Using a digital kitchen scale can help ensure precise measurements, making your cooking experience smoother.</p>
 {% endblock %}

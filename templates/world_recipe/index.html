@@ -10,10 +10,10 @@
     <p style="font-size: 1.5em; margin-top: 20px;">Cooking up a cultural cuisine at your home is easier than you think</p>
     <p style="font-size: 1.5em; margin-top: 20px;">Where will you travel today?</p>
 
-    <!-- Add map container -->
+    <!-- adding map container -->
     <div id="recipe-map" style="height: 400px; width: 100%; margin: 20px 0;"></div>
 
-    <!-- Initialize map with recipe locations -->
+    <!--  map with recipe locations -->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
     <script>
         function initMap() {
@@ -26,7 +26,7 @@
             const seenRecipes = new Set();
             const recipes = [];
 
-            // Get all recipes (not just most recent or rated)
+            // get all recipes
             [
                 {% for recipe in all_recipes %}
                     {
@@ -43,7 +43,7 @@
                 }
             });
 
-            // Create a map of unique countries
+            // a map of unique countries
             const uniqueCountries = new Map();
             recipes.forEach(recipe => {
                 if (!uniqueCountries.has(recipe.country)) {
@@ -52,7 +52,7 @@
                 uniqueCountries.get(recipe.country).push(recipe);
             });
 
-            // Geocode each country and add markers
+            // geocode each country and add markers
             uniqueCountries.forEach((recipes, country) => {
                 const geocoder = new google.maps.Geocoder();
                 geocoder.geocode({ address: country }, (results, status) => {
@@ -63,15 +63,14 @@
                             title: country
                         });
 
-                        // Create info window content
+                        // create info window content for the country
+                        const countrySlug = country.toLowerCase().replace(/\s+/g, '-'); // Slugify the country
                         const contentString = `
                             <div class="map-info-window">
-                                <h3><a href="/world_recipe/country/${country.toLowerCase().replace(/\s+/g, '-')}/">${country}</a></h3>
-                                <ul>
-                                    ${recipes.map(recipe => `
-                                        <li><a href="${recipe.url}">${recipe.title}</a></li>
-                                    `).join('')}
-                                </ul>
+
+                                <h3>${country}</h3>
+                                <a href="/world-recipe/recipe/${countrySlug}/">View Recipes from ${country}</a>
+
                             </div>
                         `;
 
@@ -86,6 +85,7 @@
                 });
             });
         }
+
 
         window.onload = initMap;
     </script>
