@@ -1,137 +1,37 @@
 {% extends "world_recipe/base.html" %}
 {% load static %}
 
-{% block title %}
-    Home 
-{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block body %}
     <h1>Travel the world from your kitchen!</h1>
-    <p style="font-size: 1.5em; margin-top: 20px;">Cooking up a cultural cuisine at your home is easier than you think</p>
-    <p style="font-size: 1.5em; margin-top: 20px;">Where will you travel today?</p>
+    <p class="welcome-text">Cooking up a cultural cuisine at your home is easier than you think</p>
+    <p class="welcome-text">Where will you travel today?</p>
 
-    <!-- adding map container -->
-    <div id="recipe-map" style="height: 400px; width: 100%; margin: 20px 0;"></div>
-
-    <!--  map with recipe locations -->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
-    <script>
-        function initMap() {
-            const map = new google.maps.Map(document.getElementById('recipe-map'), {
-                zoom: 2,
-                center: { lat: 20, lng: 0 }
-            });
-
-            // Create a Set to track unique recipe slugs
-            const seenRecipes = new Set();
-            const recipes = [];
-
-            // get all recipes
-            [
-                {% for recipe in all_recipes %}
-                    {
-                        title: "{{ recipe.title }}",
-                        country: "{{ recipe.get_country_name }}",
-                        url: "{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}",
-                        slug: "{{ recipe.slug }}"
-                    },
-                {% endfor %}
-            ].forEach(recipe => {
-                if (!seenRecipes.has(recipe.slug)) {
-                    seenRecipes.add(recipe.slug);
-                    recipes.push(recipe);
-                }
-            });
-
-            // a map of unique countries
-            const uniqueCountries = new Map();
-            recipes.forEach(recipe => {
-                if (!uniqueCountries.has(recipe.country)) {
-                    uniqueCountries.set(recipe.country, []);
-                }
-                uniqueCountries.get(recipe.country).push(recipe);
-            });
-
-            // geocode each country and add markers
-            uniqueCountries.forEach((recipes, country) => {
-                const geocoder = new google.maps.Geocoder();
-                geocoder.geocode({ address: country }, (results, status) => {
-                    if (status === 'OK') {
-                        const marker = new google.maps.Marker({
-                            map: map,
-                            position: results[0].geometry.location,
-                            title: country
-                        });
-
-                        // create info window content for the country
-                        const countrySlug = country.toLowerCase().replace(/\s+/g, '-'); // Slugify the country
-                        const contentString = `
-                            <div class="map-info-window">
-
-                                <h3>${country}</h3>
-                                <a href="/world-recipe/recipe/${countrySlug}/">View Recipes from ${country}</a>
-
-                            </div>
-                        `;
-
-                        const infowindow = new google.maps.InfoWindow({
-                            content: contentString
-                        });
-
-                        marker.addListener('click', () => {
-                            infowindow.open(map, marker);
-                        });
-                    }
-                });
-            });
-        }
-
-
-        window.onload = initMap;
-    </script>
-
+    <!-- maps -->>
+    <div id="recipe-map"></div>
+    
     <h2>Most Recent Recipes</h2>
-    <ul>
-        {% for recipe in most_recent_recipes %}
-            <li>
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                    {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
-                    {% else %}
-                        <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
-                    {% endif %}
-                </a><br>
-                <strong>{{ recipe.title }}</strong><br>
-                <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
-                    Region: {{ recipe.get_country_name }}
-                </a><br>
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
-            </li>
-        {% empty %}
-            <p>No recent recipes found. </p>
-        {% endfor %}
-    </ul>
-
+    {% include "world_recipe/includes/recipe_list.html" with recipes=most_recent_recipes %}
+    
     <h2>Most Rated Recipes</h2>
-    <ul>
-        {% for recipe in most_rated_recipes %}
-            <li>
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                    {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
-                    {% else %}
-                        <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
-                    {% endif %}
-                </a><br>
-                <strong>{{ recipe.title }}</strong><br>
-                <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
-                    Region: {{ recipe.get_country_name }}
-                </a><br>
-                Rating: {{ recipe.avg_rating|floatformat:1 }}<br>
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
-            </li>
-        {% empty %}
-            <p>No rated recipes found. </p>
-        {% endfor %}
-    </ul>
+    {% include "world_recipe/includes/recipe_list.html" with recipes=most_rated_recipes %}
+
+    <!-- load google maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap" async defer></script>
+    <script>
+        // recipe data for map
+        window.recipeData = [
+            {% for recipe in all_recipes %}
+                {
+                    title: "{{ recipe.title|escapejs }}",
+                    country: "{{ recipe.get_country_name|escapejs }}",
+                    url: "{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}",
+                    slug: "{{ recipe.slug|escapejs }}"
+                },
+            {% endfor %}
+        ];
+    </script>
+    <script src="{% static 'js/map.js' %}"></script>
 {% endblock %}
+    
