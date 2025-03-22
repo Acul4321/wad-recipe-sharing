@@ -25,10 +25,13 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-django
 
+      - name: Setup Environment
+        run: |
+          echo "DJANGO_SECRET_KEY=django-insecure-ci-test-key" >> $GITHUB_ENV
+          echo "GOOGLE_MAPS_API_KEY=test-maps-key" >> $GITHUB_ENV
+
       - name: Run Tests
         env:
           DJANGO_SETTINGS_MODULE: wad_recipe_sharing.settings
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
         run: |
           python manage.py test tests/
