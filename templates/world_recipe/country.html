@@ -1,12 +1,12 @@
 <h1>Welcome to {{ country_name }}</h1>
-<p>Some description about the country and its recipes and here is where you can browse by meal and sort by options.</p>
+<p>Some description about the country and its recipes, and here is where you can browse by meal and sort by options.</p>
 
 <h2>Recipes:</h2>
 <ul>
     {% for recipe in recipes %}
         <li>
-            <a href="{% url 'world_recipe:show_recipe' recipe_id=recipe.id recipe_slug=recipe.slug %}">
-                {{ recipe.name }}
+            <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
+                {{ recipe.title }}
             </a>
         </li>
     {% empty %}

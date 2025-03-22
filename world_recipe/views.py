@@ -23,7 +23,13 @@ def index(request):
     context_dict['most_recent_recipes'] = most_recent_recipes
     context_dict['most_rated_recipes'] = most_rated_recipes
     context_dict['google_maps_api_key'] = settings.GOOGLE_MAPS_API_KEY
+    
+    all_recipes = Recipe.objects.all()
+    context_dict['all_recipes'] = all_recipes
+    
+
     return render(request, 'world_recipe/index.html', context_dict)
+    
 
 def about(request):
     context_dict = {'message': 'World Recipe was created by Group 6C.'}
@@ -142,14 +148,23 @@ def search(request):
     # Handle non-AJAX requests here if needed
     return render(request, 'world_recipe/search.html')
 
-def country(request, regionID):
-    context_dict ={}
-    country_name = Recipe.objects.get(regionID=regionID).get_country_name
-    recipes = Recipe.objects.filter(regionID=regionID)
-    context_dict['country_name'] = country_name
-    context_dict['recipes'] = recipes
+def country(request, country):
+    context_dict = {}
     
-    return render(request, 'world_recipe/recipes_by_region.html', context_dict)
+    # get the country ID from the country slug
+    try:
+        country_id = get_country_id(country)  # cahnge slug to originID using your utility function
+        # filtering recipes based on the country ID
+        recipes = Recipe.objects.filter(originID=country_id)
+        country_name = country
+       
+        
+        context_dict['country_name'] = country_name
+        context_dict['recipes'] = recipes
+    except Recipe.DoesNotExist:
+        context_dict['error_message'] = f"Country {country} not found."
+    
+    return render(request, 'world_recipe/country.html', context_dict)
 
 def meal_type(request, country_slug, meal_type_slug):
     return HttpResponse(f"{meal_type} recipes from {country_slug}")

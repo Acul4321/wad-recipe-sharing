@@ -16,7 +16,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE) # username,password
     originID = models.IntegerField(validators=[MaxValueValidator(len(COUNTRIES)-1), MinValueValidator(0)], blank=False) #range of countries indexes
     # add a default image
-    profile_picture = models.ImageField(upload_to='profile_pictures', default='profile_pictures/default.jpg')
+    profile_picture = models.ImageField(upload_to='profile_pictures/', default='profile_pictures/default.jpg')
     description = models.TextField(max_length=500, blank=True)
 
     def __str__(self):
