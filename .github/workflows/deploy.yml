@@ -1,0 +1,38 @@
+name: Deploy
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+
+jobs:
+    test:
+      uses: ./.github/workflows/test.yml
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: test
+        
+        steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+
+        - name: Set up Python
+          uses: actions/setup-python@v4
+          with:
+            python-version: '3.10'
+
+        - name: Install dependencies
+          run: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+        - name: Deploy to PythonAnywhere
+          env:
+            PA_TOKEN: ${{ secrets.PYTHONANYWHERE_TOKEN }}
+            USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
+          run: |
+            # Update code on PythonAnywhere
+            curl -X POST \
+              -H "Authorization: Token ${PA_TOKEN}" \
+              https://www.pythonanywhere.com/api/v0/user/${USERNAME}/webapps/${USERNAME}.pythonanywhere.com/reload/
