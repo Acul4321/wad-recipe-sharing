@@ -1,15 +1,93 @@
-<h1>Welcome to {{ country_name }}</h1>
-<p>Some description about the country and its recipes, and here is where you can browse by meal and sort by options.</p>
+{% extends "world_recipe/base.html" %}
+{% load static %}
 
-<h2>Recipes:</h2>
-<ul>
-    {% for recipe in recipes %}
-        <li>
-            <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                {{ recipe.title }}
-            </a>
-        </li>
-    {% empty %}
-        <p>No recipes found for this region.</p>
-    {% endfor %}
-</ul>
+{% block title %}
+    Recipes from {{ country_name }}
+{% endblock %}
+
+{% block body %}
+    <h1>Welcome to {{ country_name }}</h1>
+    <p>Here are the recipes from {{ country_name }}. You can browse by meal type below:</p>
+
+    <!-- dropdown to select meal type -->
+    <form method="get" id="meal-type-form">
+        <label for="meal-type">Filter by Meal Type:</label>
+        <select name="meal_type" id="meal-type">
+            <option value="all" {% if request.GET.meal_type == 'all' %}selected{% endif %}>All</option>
+            <option value="BF" {% if request.GET.meal_type == 'BF' %}selected{% endif %}>Breakfast</option>
+            <option value="LU" {% if request.GET.meal_type == 'LU' %}selected{% endif %}>Lunch</option>
+            <option value="DN" {% if request.GET.meal_type == 'DN' %}selected{% endif %}>Dinner</option>
+            <option value="SN" {% if request.GET.meal_type == 'SN' %}selected{% endif %}>Snack</option>
+            <option value="DS" {% if request.GET.meal_type == 'DS' %}selected{% endif %}>Dessert</option>
+        </select>
+    </form>
+
+    
+    <form method="get" id="sort-by-form">
+        <label for="sort-by">Sort by:</label>
+        <select name="sort_by" id="sort-by">
+            <option value="none" {% if request.GET.sort_by == 'none' %}selected{% endif %}>None</option>
+            <option value="most_rated" {% if request.GET.sort_by == 'most_rated' %}selected{% endif %}>Most Rated</option>
+            <option value="recently_published" {% if request.GET.sort_by == 'recently_published' %}selected{% endif %}>Most Recently Published</option>
+        </select>
+    </form>
+
+    <h2>Recipes:</h2>
+    <div id="recipe-list">
+        {% for recipe in recipes %}
+            <div class="recipe">
+                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
+                    {{ recipe.title }}
+                </a>
+            </div>
+        {% empty %}
+            <p>No recipes found</p>
+        {% endfor %}
+    </div>
+
+    
+
+     <!-- jquery and ajax -->
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <script>
+         //  the user selects a meal type
+         $('#meal-type').change(function() {
+             var meal_type = $(this).val();
+             var country_name = "{{ country_name }}"; // Country name dynamically
+ 
+             $.ajax({
+                 url: "{% url 'world_recipe:country' country=country_name %}",
+                 data: {
+                     'meal_type': meal_type,
+                     'sort_by': $('#sort-by').val()
+                 },
+                 success: function(response) {
+                     $('#recipe-list').html($(response).find('#recipe-list').html());
+ 
+                     var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?meal_type=' + meal_type + '&sort_by=' + $('#sort-by').val();
+                     window.history.pushState({path: newUrl}, '', newUrl);
+                 }
+             });
+         });
+ 
+         // the user selects a sort option
+         $('#sort-by').change(function() {
+             var sort_by = $(this).val();
+             var country_name = "{{ country_name }}"; // Country name 
+ 
+             $.ajax({
+                 url: "{% url 'world_recipe:country' country=country_name %}",
+                 data: {
+                     'meal_type': $('#meal-type').val(),
+                     'sort_by': sort_by
+                 },
+                 success: function(response) {
+                     $('#recipe-list').html($(response).find('#recipe-list').html());
+ 
+                     var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?meal_type=' + $('#meal-type').val() + '&sort_by=' + sort_by;
+                     window.history.pushState({path: newUrl}, '', newUrl);
+                 }
+             });
+         });
+     </script>
+{% endblock %}
