@@ -4,115 +4,124 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wad_recipe_sharing.settings')
 import django
 django.setup()
 
-from django.core.files import File
-from django.contrib.auth.models import User
-from world_recipe.models import Recipe, Rating, UserProfile
-from utils import COUNTRIES
-import random
-from datetime import datetime, timedelta
 
-def create_user(username, password, origin_id):
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        user = User.objects.create_user(username=username, password=password)
-        UserProfile.objects.create(user=user, originID=origin_id)
+import random
+from django.contrib.auth.models import User
+from django.utils import timezone
+from world_recipe.models import UserProfile, Recipe, Rating
+
+
+# Function to create a user and profile
+def create_user(username, email, password, originID):
+    user = User.objects.create_user(username=username, email=email, password=password)
+    user.save()
+
+    profile = UserProfile.objects.create(
+        user=user,
+        originID=originID,
+        profile_picture='profile_pictures/default.jpg',
+        description="Description for %s" % username
+    )
+    profile.save()
+
+    print("Created User: %s" % user.username)
     return user
 
-def add_recipe(title, author, origin_id, meal_type, ingredients, instructions, image_name=None):
-    recipe = Recipe.objects.get_or_create(
-        title=title,
+# Function to create a recipe
+def create_recipe(author, originID, meal_type, title, ingredients, instructions, image):
+    recipe = Recipe.objects.create(
         authorID=author,
-        originID=origin_id,
+        originID=originID,
         meal_type=meal_type,
+        title=title,
         ingredients=ingredients,
-        instructions=instructions
-    )[0]
-    
-    if image_name:
-        image_path = os.path.join('population_images', image_name)
-        if os.path.exists(image_path):
-            with open(image_path, 'rb') as f:
-                recipe.image.save(image_name, File(f), save=True)
-    
+        instructions=instructions,
+        publish_date=timezone.now(),
+        image=image
+    )
+    recipe.save()
+
+    print("Created Recipe: %s by %s" % (recipe.title, author.username))
     return recipe
 
-def add_ratings(recipe, num_ratings):
-    users = list(User.objects.all())
-    if len(users) < num_ratings:
-        return
-    
-    # Get random users for ratings
-    rating_users = random.sample(users, num_ratings)
-    
-    for user in rating_users:
-        Rating.objects.get_or_create(
-            recipeID=recipe,
-            userID=user,
-            rating=random.randint(1, 5)
-        )
+# Function to create a rating
+def create_rating(user, recipe, rating_value):
+    rating = Rating.objects.create(
+        userID=user,
+        recipeID=recipe,
+        rating=rating_value
+    )
+    rating.save()
 
+    print("Added Rating: %s for %s by %s" % (rating.rating, recipe.title, user.username))
+    return rating
+
+# Function to add multiple ratings to a recipe
+def add_ratings(recipe, users):
+    for _ in range(2):  # Each recipe gets 2 ratings
+        user = random.choice(users)  # Pick a random user
+        rating_value = random.randint(1, 5)  # Assign random rating (1-5)
+        create_rating(user, recipe, rating_value)
+
+# Population function
 def populate():
-    # Create test users
-    users = [
-        {'username': 'john_doe', 'password': 'testpass123', 'origin': 168},  # UK
-        {'username': 'alice_smith', 'password': 'testpass123', 'origin': 169},  # USA
-        {'username': 'mario_rossi', 'password': 'testpass123', 'origin': 76},  # Italy
+    # Create sample users
+    users_data = [
+        {'username': 'user1', 'email': 'user1@gmail.com', 'password': 'password1', 'originID': 1},
+        {'username': 'user2', 'email': 'user2@gmail.com', 'password': 'password2', 'originID': 2},
+        {'username': 'user3', 'email': 'user3@gmail.com', 'password': 'password3', 'originID': 3}
     ]
+
+    users = []
+    for user_data in users_data:
+        users.append(create_user(user_data['username'], user_data['email'], user_data['password'], user_data['originID']))
+
+    # Sample Recipe Data (6 recipes)
+    recipes_data = [
+    {'author': users[0], 'originID': 16, 'meal_type': 'BF', 'title': 'Belgian Waffles', 
+     'ingredients': 'Flour, Eggs, Sugar, Butter, Milk, Yeast', 
+     'instructions': 'Mix ingredients, let batter rise, cook in waffle iron.', 
+     'image': 'recipe_images/belgian_waffles.jpg'},
+
+    {'author': users[1], 'originID': 102, 'meal_type': 'SN', 'title': 'Empanadas', 
+     'ingredients': 'Flour, Ground Beef, Onion, Garlic, Spices', 
+     'instructions': 'Fill dough with meat mixture, fold, and fry.', 
+     'image': 'recipe_images/empanadas.jpg'},
+
+    {'author': users[2], 'originID': 23, 'meal_type': 'DN', 'title': 'Feijoada', 
+     'ingredients': 'Black Beans, Pork, Beef, Onion, Garlic, Spices', 
+     'instructions': 'Slow cook beans and meat with spices.', 
+     'image': 'recipe_images/feijoada.jpg'},
+
+    {'author': users[0], 'originID': 30, 'meal_type': 'LU', 'title': 'Poutine', 
+     'ingredients': 'French Fries, Cheese Curds, Gravy', 
+     'instructions': 'Layer fries with cheese curds and pour gravy over.', 
+     'image': 'recipe_images/poutine.jpg'},
+
+    {'author': users[1], 'originID': 30, 'meal_type': 'DN', 'title': 'Maple Glazed Salmon', 
+     'ingredients': 'Salmon, Maple Syrup, Soy Sauce, Garlic', 
+     'instructions': 'Marinate salmon in sauce and bake.', 
+     'image': 'recipe_images/maple_glazed_salmon.jpg'},
+
+    {'author': users[2], 'originID': 147, 'meal_type': 'DN', 'title': 'Spaghetti Carbonara', 
+     'ingredients': 'Spaghetti, Eggs, Parmesan, Pancetta, Black Pepper', 
+     'instructions': 'Cook spaghetti, mix with eggs and pancetta.', 
+     'image': 'recipe_images/spaghetti_carbonara.jpg'},
+
+    {'author': users[1], 'originID': 147, 'meal_type': 'BF', 'title': 'Cornetto', 
+     'ingredients': 'Flour, Sugar, Butter, Yeast, Milk', 
+     'instructions': 'Bake crescent-shaped pastries.', 
+     'image': 'recipe_images/cornetto.jpg'}
+]
     
-    created_users = []
-    for user_data in users:
-        user = create_user(user_data['username'], user_data['password'], user_data['origin'])
-        created_users.append(user)
+    recipes = []
+    for recipe_data in recipes_data:
+        recipes.append(create_recipe(**recipe_data))
 
-    # Recipe data
-    recipes = [
-        {
-            'title': 'Classic Spaghetti Carbonara',
-            'author': created_users[2],  # mario_rossi
-            'origin_id': 76,  # Italy
-            'meal_type': 'DN',  # Dinner
-            'ingredients': '400g spaghetti\n200g guanciale\n4 egg yolks\n100g pecorino romano\nBlack pepper',
-            'instructions': '1. Cook pasta\n2. Fry guanciale\n3. Mix eggs and cheese\n4. Combine all ingredients',
-            'image': 'carbonara.jpg',
-            'num_ratings': 5
-        },
-        {
-            'title': 'English Breakfast',
-            'author': created_users[0],  # john_doe
-            'origin_id': 168,  # UK
-            'meal_type': 'BF',  # Breakfast
-            'ingredients': 'Eggs\nBacon\nSausages\nBeans\nMushrooms\nTomatoes\nToast',
-            'instructions': '1. Fry bacon and sausages\n2. Cook eggs\n3. Heat beans\n4. Serve hot',
-            'image': 'english_breakfast.jpg',
-            'num_ratings': 3
-        },
-        {
-            'title': 'American Burger',
-            'author': created_users[1],  # alice_smith
-            'origin_id': 169,  # USA
-            'meal_type': 'LU',  # Lunch
-            'ingredients': 'Beef patty\nBurger buns\nLettuce\nTomato\nCheese\nOnion',
-            'instructions': '1. Grill the patty\n2. Toast the buns\n3. Assemble burger\n4. Add condiments',
-            'image': 'burger.jpg',
-            'num_ratings': 4
-        }
-    ]
-
-    # Create recipes and their ratings
-    for recipe_data in recipes:
-        recipe = add_recipe(
-            title=recipe_data['title'],
-            author=recipe_data['author'],
-            origin_id=recipe_data['origin_id'],
-            meal_type=recipe_data['meal_type'],
-            ingredients=recipe_data['ingredients'],
-            instructions=recipe_data['instructions'],
-            image_name=recipe_data['image']
-        )
-        add_ratings(recipe, recipe_data['num_ratings'])
+    # Add ratings for each recipe
+    for recipe in recipes:
+        add_ratings(recipe, users)
 
 if __name__ == '__main__':
-    print('Starting World Recipe population script...')
+    print("Starting world_recipe population script...")
     populate()
-    print('Population complete!')

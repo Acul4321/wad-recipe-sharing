@@ -1,13 +1,13 @@
 {% extends "world_recipe/base.html" %}
 {% load static %}
 
-{% block title_block %}
-    Home - World Recipes
+{% block title %}
+    Home 
 {% endblock %}
 
 {% block body %}
     <h1>Travel the world from your kitchen!</h1>
-    <p style="font-size: 1.5em; margin-top: 20px;">Cooking up a cultural cuisine at your home is easier than you think..</p>
+    <p style="font-size: 1.5em; margin-top: 20px;">Cooking up a cultural cuisine at your home is easier than you think</p>
     <p style="font-size: 1.5em; margin-top: 20px;">Where will you travel today?</p>
 
     <!-- Add map container -->
@@ -26,17 +26,9 @@
             const seenRecipes = new Set();
             const recipes = [];
 
-            // Add recipes while checking for duplicates
+            // Get all recipes (not just most recent or rated)
             [
-                {% for recipe in most_recent_recipes %}
-                    {
-                        title: "{{ recipe.title }}",
-                        country: "{{ recipe.get_country_name }}",
-                        url: "{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}",
-                        slug: "{{ recipe.slug }}"
-                    },
-                {% endfor %}
-                {% for recipe in most_rated_recipes %}
+                {% for recipe in all_recipes %}
                     {
                         title: "{{ recipe.title }}",
                         country: "{{ recipe.get_country_name }}",
@@ -119,7 +111,6 @@
             <p>No recent recipes found. </p>
         {% endfor %}
     </ul>
-    
 
     <h2>Most Rated Recipes</h2>
     <ul>
@@ -133,7 +124,9 @@
                     {% endif %}
                 </a><br>
                 <strong>{{ recipe.title }}</strong><br>
-                Region: {{ recipe.get_country_name }}<br>
+                <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
+                    Region: {{ recipe.get_country_name }}
+                </a><br>
                 Rating: {{ recipe.avg_rating|floatformat:1 }}<br>
                 <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
             </li>
