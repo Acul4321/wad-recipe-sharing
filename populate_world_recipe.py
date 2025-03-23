@@ -92,14 +92,11 @@ def add_comments(recipe, users):
         create_comment(user, recipe, content)
 
 def create_favorite(user, recipe):
-    favorite, created = Favorite.objects.get_or_create(
+    favorite = Favorite.objects.get_or_create(
         user=user,
         recipe=recipe
     )
-    if created:
-        print(f"Added Favorite: {user.username} favorites {recipe.title}")
-    else:
-        print(f"Favorite already exists: {user.username} favorites {recipe.title}")
+
     return favorite
 
 
@@ -221,7 +218,31 @@ def populate():
     {'author': users[2], 'originID': 147, 'meal_type': 'DS', 'title': 'Tiramisu', 
      'ingredients': 'Ladyfingers, Coffee, Mascarpone, Cocoa Powder', 
      'instructions': 'Layer soaked ladyfingers with mascarpone and cocoa.', 
-     'image': 'recipe_images/tiramisu.jpg'}
+     'image': 'recipe_images/tiramisu.jpg'},
+
+
+
+    {'author': users[0], 'originID': 125, 'meal_type': 'DN', 'title': 'Adobo', 
+    'ingredients': 'Chicken or Pork, Soy Sauce, Vinegar, Garlic, Bay Leaves', 
+    'instructions': 'Simmer meat in soy sauce, vinegar, and spices until tender.', 
+    'image': 'recipe_images/adobo.jpg'},
+
+    {'author': users[1], 'originID': 125, 'meal_type': 'DS', 'title': 'Leche Flan', 
+     'ingredients': 'Egg Yolks, Condensed Milk, Sugar, Vanilla', 
+     'instructions': 'Steam egg and milk mixture until set, then caramelize.', 
+     'image': 'recipe_images/leche_flan.jpg'},
+
+    
+
+    {'author': users[2], 'originID': 81, 'meal_type': 'DN', 'title': 'Nyama Choma', 
+     'ingredients': 'Beef or Goat, Salt, Spices', 
+     'instructions': 'Grill seasoned meat over open fire and serve hot.', 
+     'image': 'recipe_images/choma.jpg'},
+
+    {'author': users[0], 'originID': 81, 'meal_type': 'BF', 'title': 'Mandazi', 
+     'ingredients': 'Flour, Coconut Milk, Sugar, Cardamom', 
+     'instructions': 'Mix ingredients, shape into triangles, and deep-fry.', 
+     'image': 'recipe_images/mandazi.jpg'}
 ]
 
     
