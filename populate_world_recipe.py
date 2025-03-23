@@ -53,7 +53,6 @@ def create_recipe(author, originID, meal_type, title, ingredients, instructions,
 
     return recipe
 
-# Function to create a rating
 def create_rating(user, recipe, rating_value):
     rating = Rating.objects.create(
         userID=user,
@@ -61,15 +60,13 @@ def create_rating(user, recipe, rating_value):
         rating=rating_value
     )
     rating.save()
-
-    print("Added Rating: %s for %s by %s" % (rating.rating, recipe.title, user.username))
     return rating
 
-# Function to add multiple ratings to a recipe
+
 def add_ratings(recipe, users):
-    for _ in range(2):  # Each recipe gets 2 ratings
-        user = random.choice(users)  # Pick a random user
-        rating_value = random.randint(1, 5)  # Assign random rating (1-5)
+    for _ in range(2):  
+        user = random.choice(users)  
+        rating_value = random.randint(1, 5)  
         create_rating(user, recipe, rating_value)
 
 
@@ -80,13 +77,10 @@ def create_comment(user, recipe, content):
         content=content
     )
     comment.save()
-
-    print("Added Comment: '%s' for %s by %s" % (comment.content, recipe.title, user.username))
     return comment
 
 def add_comments(recipe, users):
-    # how many comments to add, here we add 2 random comments
-    for _ in range(2):  # a recipe gets 2 comments
+    for _ in range(2):  
         user = random.choice(users)
         content = "Thanks for the recipe!"  
         create_comment(user, recipe, content)
@@ -242,7 +236,12 @@ def populate():
     {'author': users[0], 'originID': 81, 'meal_type': 'BF', 'title': 'Mandazi', 
      'ingredients': 'Flour, Coconut Milk, Sugar, Cardamom', 
      'instructions': 'Mix ingredients, shape into triangles, and deep-fry.', 
-     'image': 'recipe_images/mandazi.jpg'}
+     'image': 'recipe_images/mandazi.jpg'},
+
+     {'author': users[1], 'originID': 17, 'meal_type': 'DN', 'title': 'Bibimbap', 
+      'ingredients': 'Rice, Beef, Egg, Carrots, Spinach, Gochujang', 
+      'instructions': 'Top rice with seasoned vegetables, beef, egg, and gochujang sauce. Mix before eating.', 
+      'image': 'recipe_images/bibimbap.jpg'}
 ]
 
     
