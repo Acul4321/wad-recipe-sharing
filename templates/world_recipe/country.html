@@ -22,6 +22,7 @@
         </select>
     </form>
 
+    <!-- Country Filters -->
     <form method="get" id="sort-by-form">
         <label for="sort-by">Sort by:</label>
         <select name="sort_by" id="sort-by">
@@ -31,26 +32,18 @@
         </select>
     </form>
 
+    <!-- Recipe List -->
     <h2>Recipes:</h2>
     <div id="recipe-list">
-        {% for recipe in recipes %}
-            <div class="recipe">
-                {% if recipe.image %}
-                    <img src="{{ recipe.image.url }}" alt="Image of {{ recipe.title }}" style="max-width: 250px; height: auto;">
-                {% else %}
-                    <p>No image available for this recipe.</p>
-                {% endif %}
-                
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                    <h3>{{ recipe.title }}</h3>
-                </a>
-            </div>
-        {% empty %}
-            <p>No recipes found</p>
-        {% endfor %}
+        {% include "world_recipe/includes/recipe_list.html" with recipes=recipes %}
     </div>
 
     <!-- including jQuery and external js file -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{% static 'js/country_filter.js' %}"></script>
+    <script>
+        window.COUNTRY_NAME = "{{ country_name }}";
+        window.COUNTRY_URL = "{% url 'world_recipe:country' country=country_name %}";
+    </script>
+    <script src="{% static 'js/countryFilters.js' %}"></script>
+
 {% endblock %}
