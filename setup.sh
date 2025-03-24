@@ -15,4 +15,8 @@ python manage.py makemigrations
 echo "Applying migrations..."
 python manage.py migrate
 
+# Populate Data
+echo "Populating database..."
+python ./populate_world_recipe.py
+
 echo "Setup complete!"
