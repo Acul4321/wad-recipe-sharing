@@ -6,7 +6,7 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
 from django.shortcuts import redirect, reverse
 from django.http import HttpResponse, JsonResponse
-from world_recipe.forms import UserForm, UserProfileForm, ProfileEditForm, RecipeForm
+from world_recipe.forms import UserForm, UserProfileForm, ProfileEditForm, RecipeForm, LoginForm
 from world_recipe.models import UserProfile, Recipe, Comment, Rating, Favorite
 from utils import COUNTRIES, get_country_name, get_country_id
 from django.db.models import Avg
@@ -40,44 +40,55 @@ def about(request):
 
 def register(request):
     if request.method == 'POST':
-        user_profile_form = UserProfileForm(request.POST)
         user_form = UserForm(request.POST)
+        user_profile_form = UserProfileForm(request.POST)
         
-        if user_profile_form.is_valid():
-            #Create User for link
-            user = user_form.save(commit=False)
-            user.set_password(user.password)
-            user.save()
-            
-            # Create UserProfile
-            profile = user_profile_form.save(commit=False)
-            profile.user = user #link to user
-            profile.originID = user_profile_form.cleaned_data['originID']
-            profile.save()
-            
-            return redirect('world_recipe:login')
+        if user_form.is_valid() and user_profile_form.is_valid():
+            try:
+                # Create User
+                user = user_form.save(commit=False)
+                user.set_password(user.password)
+                user.save()
+                
+                # Create UserProfile
+                profile = user_profile_form.save(commit=False)
+                profile.user = user
+                profile.originID = user_profile_form.cleaned_data['originID']
+                profile.save()
+
+                # Auto login
+                user = authenticate(username=user.username, 
+                                    password=user_form.cleaned_data['password'])
+                if user:
+                    auth_login(request, user)
+                    return redirect('world_recipe:index')
+            except Exception as e:
+                # if there is an error, delete the user if created
+                if user:
+                    user.delete()
+                return HttpResponse(f"An error occurred during registration: {str(e)}")
     else:
-        user_form = UserProfileForm()
+        user_profile_form = UserProfileForm()
         
-    return render(request, 'world_recipe/register.html', {'user_form': user_form})
+    return render(request, 
+                 'world_recipe/register.html',
+                 {'profile_form': user_profile_form})
 
 def login(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        
-        if user:
-            if user.is_active:
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            
+            if user and user.is_active:
                 auth_login(request, user)
-                return redirect(reverse('world_recipe:index'))
-            else:
-                return HttpResponse("Your account is disabled.")
-        else:
-            return HttpResponse("Invalid login details supplied.")
-        
+                return redirect('world_recipe:index')
     else:
-        return render(request, 'world_recipe/login.html', {'user_form': UserForm()})
+        form = LoginForm()
+    
+    return render(request, 'world_recipe/login.html', {'login_form': form})
 
 @login_required
 def logout(request): # since user is logged in, we do not need to check
