@@ -1,7 +1,7 @@
 class CommentManager {
     constructor(options) {
         this.options = options;
-        this.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        this.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // For Auth
         this.initEventListeners();
     }
 

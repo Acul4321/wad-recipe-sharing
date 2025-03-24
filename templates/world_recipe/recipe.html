@@ -51,6 +51,7 @@
             {% endif %}
         </div>
 
+        <!-- Favourite Section -->
         {% if user.is_authenticated %}
             <button id="favorite-btn" class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %}"
                     data-recipe-id="{{ recipe.id }}">
@@ -61,6 +62,7 @@
             </button>
         {% endif %}
         
+        <!-- Recipe Body -->
         <h1>{{ recipe.title }}</h1>
         <div class="recipe-meta">
             <p>By: <a href="{% url 'world_recipe:profile' recipe.authorID.username %}">{{ recipe.authorID.username }}</a></p>
@@ -86,6 +88,7 @@
         </ol>
     </div>
 
+    <!-- Owner Recipe Delete -->
     {% if user == recipe.authorID %}
         <div class="recipe-actions">
             <a href="{% url 'world_recipe:delete' country=country meal_type=meal_type recipe_name=recipe.slug %}" 
@@ -96,6 +99,7 @@
         </div>
     {% endif %}
 
+    <!-- Comments Section -->
     <div class="comments-section mt-5">
         <h3>Comments</h3>
         
@@ -155,6 +159,7 @@
     </div>
 </div>
 
+<!-- Javascript Logic -->
 <script src="{% static 'js/comments.js' %}"></script>
 <script src="{% static 'js/ratings.js' %}"></script>
 <script src="{% static 'js/favorites.js' %}"></script>
