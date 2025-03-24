@@ -22,7 +22,6 @@
         </select>
     </form>
 
-    
     <form method="get" id="sort-by-form">
         <label for="sort-by">Sort by:</label>
         <select name="sort_by" id="sort-by">
@@ -34,60 +33,13 @@
 
     <h2>Recipes:</h2>
     <div id="recipe-list">
-        {% for recipe in recipes %}
-            <div class="recipe">
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                    {{ recipe.title }}
-                </a>
-            </div>
-        {% empty %}
-            <p>No recipes found</p>
-        {% endfor %}
+        {% include "world_recipe/includes/recipe_list.html" with recipes=recipes %}
     </div>
 
-    
-
-     <!-- jquery and ajax -->
-     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-     <script>
-         //  the user selects a meal type
-         $('#meal-type').change(function() {
-             var meal_type = $(this).val();
-             var country_name = "{{ country_name }}"; // Country name dynamically
- 
-             $.ajax({
-                 url: "{% url 'world_recipe:country' country=country_name %}",
-                 data: {
-                     'meal_type': meal_type,
-                     'sort_by': $('#sort-by').val()
-                 },
-                 success: function(response) {
-                     $('#recipe-list').html($(response).find('#recipe-list').html());
- 
-                     var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?meal_type=' + meal_type + '&sort_by=' + $('#sort-by').val();
-                     window.history.pushState({path: newUrl}, '', newUrl);
-                 }
-             });
-         });
- 
-         // the user selects a sort option
-         $('#sort-by').change(function() {
-             var sort_by = $(this).val();
-             var country_name = "{{ country_name }}"; // Country name 
- 
-             $.ajax({
-                 url: "{% url 'world_recipe:country' country=country_name %}",
-                 data: {
-                     'meal_type': $('#meal-type').val(),
-                     'sort_by': sort_by
-                 },
-                 success: function(response) {
-                     $('#recipe-list').html($(response).find('#recipe-list').html());
- 
-                     var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?meal_type=' + $('#meal-type').val() + '&sort_by=' + sort_by;
-                     window.history.pushState({path: newUrl}, '', newUrl);
-                 }
-             });
-         });
-     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        window.COUNTRY_NAME = "{{ country_name }}";
+        window.COUNTRY_URL = "{% url 'world_recipe:country' country=country_name %}";
+    </script>
+    <script src="{% static 'js/countryFilters.js' %}"></script>
 {% endblock %}

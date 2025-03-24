@@ -45,29 +45,12 @@
         </div>
     {% endif %}
 
-    <!-- User's Recipes Section -->
+    <!-- Users Recipes Section -->
     <div id="my_recipes" class="profile-section">
         <h3>My Recipes</h3>
         {% with user_recipes=selected_user.recipe_set.all %}
             {% if user_recipes %}
-                <ul class="recipe-list">
-                    {% for recipe in user_recipes %}
-                        <li class="recipe-item">
-                            <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                                {% if recipe.image %}
-                                    <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
-                                {% else %}
-                                    <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
-                                {% endif %}
-                                <div class="recipe-details">
-                                    <h4>{{ recipe.title }}</h4>
-                                    <p>Type: {{ recipe.get_meal_type }}</p>
-                                    <p>From: {{ recipe.get_country_name }}</p>
-                                </div>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
+                {% include "world_recipe/includes/recipe_list.html" with recipes=user_recipes %}
             {% else %}
                 <p>No recipes created yet.</p>
             {% endif %}
@@ -78,24 +61,7 @@
     <div id="favourites" class="profile-section">
         <h3>Favorite Recipes</h3>
         {% if favorite_recipes %}
-            <ul class="recipe-list">
-                {% for recipe in favorite_recipes %}
-                    <li class="recipe-item">
-                        <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                            {% if recipe.image %}
-                                <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
-                            {% else %}
-                                <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
-                            {% endif %}
-                            <div class="recipe-details">
-                                <h4>{{ recipe.title }}</h4>
-                                <p>Type: {{ recipe.get_meal_type }}</p>
-                                <p>From: {{ recipe.get_country_name }}</p>
-                            </div>
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
+            {% include "world_recipe/includes/recipe_list.html" with recipes=favorite_recipes %}
         {% else %}
             <p>No favorite recipes yet.</p>
         {% endif %}

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from world_recipe.models import UserProfile, Recipe, MealType
 from utils import COUNTRIES
 
+# used for registering the user
 class UserProfileForm(forms.ModelForm): # used to register a new user
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
@@ -31,6 +32,7 @@ class UserForm(forms.ModelForm): #used for login and part of registering(store U
         model = User
         fields = ('username', 'password')
 
+# used to edit your own profile
 class ProfileEditForm(forms.ModelForm):
     description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}),required=False)
     profile_picture = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}),required=False)
@@ -39,6 +41,7 @@ class ProfileEditForm(forms.ModelForm):
         model = UserProfile
         fields = ('description', 'profile_picture')
 
+# used to create recipes
 class RecipeForm(forms.ModelForm):
     title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     originID = forms.ChoiceField(choices=[(id, name) for id, name in COUNTRIES.items()],widget=forms.Select(attrs={'class': 'form-control'}))
