@@ -38,10 +38,12 @@
         {% include "world_recipe/includes/recipe_list.html" with recipes=recipes %}
     </div>
 
+    <!-- including jQuery and external js file -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         window.COUNTRY_NAME = "{{ country_name }}";
         window.COUNTRY_URL = "{% url 'world_recipe:country' country=country_name %}";
     </script>
     <script src="{% static 'js/countryFilters.js' %}"></script>
+
 {% endblock %}

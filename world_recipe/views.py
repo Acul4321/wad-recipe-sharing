@@ -168,8 +168,8 @@ def country(request, country):
             recipes = recipes.annotate(avg_rating=Avg('rating__rating')).order_by('-avg_rating')
         elif sort_by == 'recently_published':
             recipes = recipes.order_by('-publish_date')
-       
         
+
         context_dict['country_name'] = country_name
         context_dict['recipes'] = recipes
         context_dict['meal_type'] = meal_type
