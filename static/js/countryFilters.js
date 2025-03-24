@@ -1,40 +1,43 @@
-class CountryFilters {
-    constructor() {
-        this.mealTypeSelect = $('#meal-type');
-        this.sortBySelect = $('#sort-by');
-        this.recipeList = $('#recipe-list');
-        this.bindEvents();
-    }
+$(document).ready(function () {
+    // pass the country URL dynamically from the data-url attribute
+    var countryUrl = $('#ajax-url').data('url');
 
-    bindEvents() {
-        this.mealTypeSelect.change(() => this.updateFilters());
-        this.sortBySelect.change(() => this.updateFilters());
-    }
-
-    updateFilters() {
-        const params = {
-            'meal_type': this.mealTypeSelect.val(),
-            'sort_by': this.sortBySelect.val()
-        };
-
+    // When meal type changes
+    $('#meal-type').change(function () {
+        var meal_type = $(this).val();
+        
         $.ajax({
-            url: window.COUNTRY_URL,
-            data: params,
-            success: (response) => {
-                this.recipeList.html($(response).find('#recipe-list').html());
-                this.updateUrl(params);
+            url: countryUrl,  // countr url wl change dynamically
+            data: {
+                'meal_type': meal_type,
+                'sort_by': $('#sort-by').val()
+            },
+            success: function (response) {
+                $('#recipe-list').html($(response).find('#recipe-list').html());
+
+                var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?meal_type=' + meal_type + '&sort_by=' + $('#sort-by').val();
+                window.history.pushState({ path: newUrl }, '', newUrl);
             }
         });
-    }
+    });
 
-    updateUrl(params) {
-        const newUrl = new URL(window.location.href);
-        Object.entries(params).forEach(([key, value]) => {
-            newUrl.searchParams.set(key, value);
+    // when sort option changes
+    $('#sort-by').change(function () {
+        var sort_by = $(this).val();
+
+        $.ajax({
+            url: countryUrl,  // country name dynamic again
+            data: {
+                'meal_type': $('#meal-type').val(),
+                'sort_by': sort_by
+            },
+            success: function (response) {
+                $('#recipe-list').html($(response).find('#recipe-list').html());
+
+                var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?meal_type=' + $('#meal-type').val() + '&sort_by=' + sort_by;
+                window.history.pushState({ path: newUrl }, '', newUrl);
+            }
         });
-        window.history.pushState({path: newUrl.toString()}, '', newUrl.toString());
-    }
-}
+    });
+});
 
-// init filters when DOM is ready
-$(document).ready(() => new CountryFilters());
