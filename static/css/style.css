@@ -221,3 +221,30 @@
 .recipe-details {
     margin-top: 10px;
 }
+
+.recipe-item {
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.recipe-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.recipe-link:hover {
+    transform: scale(1.02);
+}
+
+.country-link {
+    position: relative;
+    z-index: 2;
+    color: blue;
+    text-decoration: underline;
+}
+
+.country-link:hover {
+    text-decoration: none;
+}

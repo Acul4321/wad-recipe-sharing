@@ -3,27 +3,24 @@
 <ul class="recipe-list">
     {% for recipe in recipes %}
         <li class="recipe-item">
-            <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
+            <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}" class="recipe-link">
                 {% if recipe.image %}
                     <img class="recipe-image" src="{{ recipe.image.url }}" alt="{{ recipe.title }}">
                 {% else %}
                     <img class="recipe-image" src="{% static 'images/logo.png' %}" alt="No image found">
                 {% endif %}
+                <div class="recipe-details">
+                    <strong>{{ recipe.title }}</strong>
+                    <p>
+                        <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}" class="country-link">
+                            Region: {{ recipe.get_country_name }}
+                        </a>
+                    </p>
+                    {% if recipe.avg_rating %}
+                        <p>Rating: {{ recipe.avg_rating|floatformat:1 }}</p>
+                    {% endif %}
+                </div>
             </a>
-            <div class="recipe-details">
-                <strong>{{ recipe.title }}</strong>
-                <p>
-                    <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
-                        Region: {{ recipe.get_country_name }}
-                    </a>
-                </p>
-                {% if recipe.avg_rating %}
-                    <p>Rating: {{ recipe.avg_rating|floatformat:1 }}</p>
-                {% endif %}
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                    View Recipe
-                </a>
-            </div>
         </li>
     {% empty %}
         <p>No recipes found.</p>
