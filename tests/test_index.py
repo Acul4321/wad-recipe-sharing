@@ -105,18 +105,13 @@ class IndexViewTests(TestCase):
         """
         Does the index() view exist in the world_recipe app's views.py module?
         """
-        
-        
         is_callable = callable(index)
         
         
         self.assertTrue(is_callable, "The index() view for world_recipe does not exist.")
         
     def test_for_about_hyperlink(self):
-        """
-        does the response contain the 'about' hyperlink in the index page?
-        Checks for both single and double quotes in the attribute. Both are acceptable.
-        """
+        #about hyperlink in the index page
         response = self.client.get(reverse('world_recipe:index'))
 
         # check for the correct 'about' link (without worrying about quotes)
@@ -139,3 +134,9 @@ class IndexViewTests(TestCase):
         
         self.assertTrue(register_link_single or register_link_double, 
                         "We couldn't find the hyperlink to the /world-recipe/register/ URL in your index page. Check that it appears EXACTLY as in the index template.")
+    
+    def test_index_starts_with_doctype(self):
+        response = self.client.get(reverse('world_recipe:index'))
+        self.assertTrue(response.content.decode().startswith('<!DOCTYPE html>'), "your index.html does not start with <!DOCTYPE html>")
+    
+    
