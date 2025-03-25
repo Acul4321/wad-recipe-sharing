@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
-from world_recipe.models import Recipe, UserProfile
+from world_recipe.models import Recipe, UserProfile, Rating
 from django.utils import timezone
 
 class IndexViewTests(TestCase):
@@ -36,7 +36,10 @@ class IndexViewTests(TestCase):
             instructions='test instructions 2',
             publish_date=timezone.now()
         )
-        
+        r1 = Rating.objects.create(recipeID=self.recipe1, rating=4, userID=self.user)
+        r2 = Rating.objects.create(recipeID=self.recipe1, rating=5, userID=self.user)
+        r3 = Rating.objects.create(recipeID=self.recipe2, rating=3, userID=self.user)
+
         # Initialize the test client
         self.client = Client()
 
@@ -71,3 +74,28 @@ class IndexViewTests(TestCase):
         self.assertGreaterEqual(len(recent_recipes), 2)
         # Check that recipes are ordered by publish date (newest first)
         self.assertGreaterEqual(recent_recipes[0].publish_date, recent_recipes[1].publish_date)
+
+    
+
+
+    def test_recipe_titles_in_context(self):
+        # Test that the titles for the recipes are correctly displayed in the context
+        response = self.client.get(reverse('world_recipe:index'))
+        self.assertContains(response, self.recipe1.title)
+        self.assertContains(response, self.recipe2.title)
+    
+    def test_rated_recipes_order(self):
+        # Test that rated recipes are ordered by rating value
+        response = self.client.get(reverse('world_recipe:index'))
+        rated_recipes = response.context['most_rated_recipes']
+        self.assertGreaterEqual(len(rated_recipes), 2)
+        # Check that recipes are ordered by rating value (highest rating first)
+        # avg_rating is passed
+        self.assertGreaterEqual(rated_recipes[0].avg_rating, rated_recipes[1].avg_rating)
+
+
+    def test_recipe_ratings_in_context(self):
+        # Test that the ratings for the recipes are correctly displayed in the context
+        response = self.client.get(reverse('world_recipe:index'))
+        self.assertContains(response, self.recipe1.average_rating())
+        

@@ -1,0 +1,1 @@
+#test that you cant have a rating of less than one
