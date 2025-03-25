@@ -24,7 +24,7 @@ class StaticMediaTemplatesTests(TestCase):
 
     def test_static_directory_exists(self):
         """check if the static directory exists."""
-        self.assertTrue(os.path.isdir(self.static_dir), "Static directory does not exist!")
+        self.assertTrue(os.path.isdir(self.static_dir), "Staic directory does not exist!")
 
         does_images_static_dir_exist = os.path.isdir(os.path.join(self.static_dir, 'images'))
         does_default_jpg_exist = os.path.isfile(os.path.join(self.static_dir, 'images', 'default.png'))
@@ -34,20 +34,37 @@ class StaticMediaTemplatesTests(TestCase):
 
     def test_media_directory_exists(self):
         """Check if the media directory, profile_pictures, and recipe_images exist."""
-        self.assertTrue(os.path.isdir(self.media_dir), "Media directory does not exist!")
+        self.assertTrue(os.path.isdir(self.media_dir), "Media directory does not existt")
         self.profile_pictures_dir = os.path.join(self.media_dir, 'profile_pictures')
         self.recipe_images_dir = os.path.join(self.media_dir, 'recipe_images')
-        self.assertTrue(os.path.isdir(self.profile_pictures_dir), "profile_pictures subdirectory was not found in media directory.")
-        self.assertTrue(os.path.isdir(self.recipe_images_dir), "recipe_images subdirectory was not found in media directory.")
+        self.assertTrue(os.path.isdir(self.profile_pictures_dir), "profile_pictures subdirectory was not found in media directory ")
+        self.assertTrue(os.path.isdir(self.recipe_images_dir), "recipe_images subdirectory was not found in media directory ")
 
 
     def test_template_directory_exists(self):
-        self.assertTrue(os.path.isdir(self.template_dir), "Template directory does not exist!")
+        self.assertTrue(os.path.isdir(self.template_dir), "template directory does not exist ")
     
-    
+    def test_template_files_exist(self):
+        """Check that the required templates exist."""
+        index_template = os.path.join(self.template_dir, 'world_recipe/index.html')
+        about_template = os.path.join(self.template_dir, 'world_recipe/about.html')
+        self.assertTrue(os.path.isfile(index_template), "index.html template was not found in the templates directory ")
+        self.assertTrue(os.path.isfile(about_template), "about.html template was not found in the templates directory ")
 
-    
+    def test_static_media_config(self):
+        static_dir_exists = 'STATIC_DIR' in dir(settings)
+        self.assertTrue(static_dir_exists, "your settings.py module does not have the variable STATIC_DIR defined")
 
+        static_path = os.path.normpath(settings.STATIC_DIR)
+        expected_static_path = os.path.normpath(self.static_dir)
+        self.assertEqual(expected_static_path, static_path, "the value of STATIC_DIR does not equal the expected path It should point to your project root with 'static' appended")
 
+        staticfiles_dirs_exists = 'STATICFILES_DIRS' in dir(settings)
+        self.assertTrue(staticfiles_dirs_exists, "the required setting STATICFILES_DIRS is not present in your project's settings.py module ")
+        self.assertTrue(isinstance(settings.STATICFILES_DIRS, list), "STATICFILES_DIRS should be a list")
 
-    
+        static_url_exists = 'STATIC_URL' in dir(settings)
+        static_url_value = settings.STATIC_URL
+        self.assertTrue(static_url_exists, "The STATIC_URL variable has not been defined in settings.py.")
+        self.assertEqual(static_url_value, '/static/', "STATIC_URL should be set to '/static/'")
+
