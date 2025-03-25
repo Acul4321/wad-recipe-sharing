@@ -132,7 +132,7 @@ class IndexViewTests(TestCase):
         Does the response contain the 'register' hyperlink in the index page?
         """
         response = self.client.get(reverse('world_recipe:index'))
-        print(response.content.decode())
+        
         # check if the 'Register' link exists in the page
         register_link_single = '<a href="/world-recipe/register/">Register</a>' in response.content.decode()
         register_link_double = '<a href="/world-recipe/register/" class="register-link">Register</a>' in response.content.decode()
