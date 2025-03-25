@@ -1,15 +1,36 @@
-<h1>Welcome to {{ country_name }}</h1>
+{% extends "world_recipe/base.html" %}
+{% load static %}
+
+{% block title %}
+    {{ country_name}}
+{% endblock %}
+
+{% block body %}
+<h1>Welcome to <strong>{{ country_name | capfirst}}</strong></h1>
 <p>Some description about the country and its recipes, and here is where you can browse by meal and sort by options.</p>
 
-<h2>Recipes:</h2>
-<ul>
+<h1 class="text-center">Recipes</h1>
+    <div class="row">
     {% for recipe in recipes %}
-        <li>
-            <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                {{ recipe.title }}
-            </a>
-        </li>
+        {% if recipe.get_country_name|slugify == country_name|slugify %}
+            <div class="col-md-4 col-sm-6 mb-4">    
+                <div class="card">
+                    <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
+                        {% if recipe.image %}
+                            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}"class="img-fluid" style="width: 200px; height: 150px;">
+                        {% else %}
+                            <img src="{% static 'images/logo.png' %}" alt="No image found"class="img-fluid"style="width: 200px; height: 150px;">
+                        {% endif %}
+                    </a><br>
+                    <strong>{{ recipe.title }}</strong><br>
+                    <span style="color: #1b7508; text-decoration: none;"><strong>Meal Type:</strong> {{ recipe.get_meal_type }}</span>
+                    <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}"><strong>View Recipe</strong></a>
+                </div>
+            </div>
+        {% endif %}
     {% empty %}
         <p>No recipes found for this region.</p>
     {% endfor %}
-</ul>
+    </div>
+
+{% endblock %}

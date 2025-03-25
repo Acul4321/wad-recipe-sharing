@@ -26,7 +26,7 @@
 
     <div class="recipe-header">
         {% if recipe.image %}
-            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe-image" style="max-width: 500px;">
+            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe-image img-fluid" style="max-width: 500px;">
         {% endif %}
         
         <!-- Update rating system -->
@@ -58,7 +58,7 @@
         </div>
 
         {% if user.is_authenticated %}
-            <button id="favorite-btn" class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %}"
+            <button id="favorite-btn" class="btn-warning {% if is_favorite %}btn-warning {% else %}btn-warning {% endif %}"
                     data-recipe-id="{{ recipe.id }}">
                 <svg class="star" style="width: 24px; height: 24px;" aria-hidden="true">
                     <use href="#star" class="{% if is_favorite %}star-filled{% else %}star-empty{% endif %}"/>
@@ -111,7 +111,7 @@
                 <div class="form-group">
                     <textarea class="form-control" id="comment-content" rows="3" placeholder="Write a comment..."></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+                <button type="submit" class="btn btn-success mt-2">Post Comment</button>
             </form>
         {% else %}
             <p>Please <a href="{% url 'world_recipe:login' %}">login</a> to leave a comment.</p>
@@ -135,7 +135,7 @@
                             </div>
                             <div class="reply-form" id="reply-form-{{ comment.id }}" style="display: none;">
                                 <textarea class="form-control mb-2" rows="2"></textarea>
-                                <button class="btn btn-sm btn-primary submit-reply" 
+                                <button class="btn btn-sm btn-success submit-reply" 
                                         data-comment-id="{{ comment.id }}">Submit Reply</button>
                                 <button class="btn btn-sm btn-secondary cancel-reply">Cancel</button>
                             </div>

@@ -185,7 +185,7 @@ body {
     padding: 20px;
 }
 
-h1, h2 {
+h1, h2, h3{
     color: #009900;
 }
 
@@ -196,8 +196,9 @@ h1, h2 {
 
 .container {
     padding: 20px;
-    alignment: center;
-    background-color: #d7f1d5;
+    text-align: left;
+    background-color: #ddfdda;
+
 }
 
 .title {
@@ -207,26 +208,28 @@ h1, h2 {
 }
 
 
-.list-group-item {
-    background-color: #d4ffd2; 
-    border: 1px solid #003b06;   
-    border-radius: 4px;        
-    padding: 15px;             
-    margin-bottom: 10px;       
-}
-.list-group-item:hover {
-    background-color: #d4fcd2; 
-}
-
-.list-group-item a {
+.card a {
     color: #1b7508;
     text-decoration: none; 
 }
 
-.list-group-item a:hover {
+.card a:hover {
     color: #165c08; 
     text-decoration: underline; 
 }
+
+.card {
+    text-align: center;
+    background-color: #d4fcd2; 
+    border: 1px solid #003b06;   
+    border-radius: 4px;        
+    padding: 15px;             
+    margin-bottom: 10px;
+}
+.card:hover {
+    background-color: #bbffb8; 
+}
+
 
 
 /*mobile screens*/
@@ -247,6 +250,15 @@ h1, h2 {
     .output-box {
         font-size: 12px;
     }
+    .search-container input {
+        max-width: 150px;
+        font-size: 10px;
+    }
+    .auth-buttons a {
+        font-size: 10px;
+        padding: 4px 10px;
+        width: auto;
+    }
 }
 /* tablets or medium sized screens*/
 @media screen and (min-width: 600px) and (max-width: 900px) {
@@ -265,6 +277,15 @@ h1, h2 {
 
     .output-box {
         font-size: 13px;
+    }
+    .search-container input {
+        max-width: 175px;
+        font-size: 12px;
+    }
+    .auth-buttons a {
+        font-size: 12px;
+        padding: 6px 12px;
+        width: auto;
     }
 }
 
@@ -285,5 +306,14 @@ h1, h2 {
 
     .output-box {
         font-size: 14px;
+    }
+    .search-container input {
+        max-width: 250px;
+        font-size: 16px;
+    }
+    .auth-buttons a {
+        font-size: 16px;
+        padding: 8px 16px;
+        width: auto;
     }
 }

@@ -4,8 +4,10 @@
 {% block title %}Login{% endblock %}
 
 {% block body %}
-<div class="container">
-    <h2>Login to World Recipe</h2>
+<div class="container text-start">
+    <div class="row justify-content-center">
+    <div class="col-6 col-md-4">
+    <h2 class="text-center">Login to World Recipe</h2>
     <form method="post" action="{% url 'world_recipe:login' %}">
         {% csrf_token %}
         {% for field in user_form %}
@@ -19,7 +21,11 @@
                 {% endif %}
             </div>
         {% endfor %}
-        <button type="submit" class="btn btn-primary">Login</button>
+        <div class="d-flex justify-content-end mt-3">
+            <button type="submit" class="btn btn-success">Login</button>
+        </div>
     </form>
+</div>
+</div>
 </div>
 {% endblock %}

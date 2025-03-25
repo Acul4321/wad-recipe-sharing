@@ -66,11 +66,11 @@
 
                         // Create info window content
                         const contentString = `
-                            <div class="map-info-window">
-                                <h3><a href="/world_recipe/country/${country.toLowerCase().replace(/\s+/g, '-')}/">${country}</a></h3>
+                            <div class="map-info-window text-start text-success">
+                                <h3><a href="/world-recipe/recipe/${country.toLowerCase().replace(/\s+/g, '-')}/"  class="text-success">${country}</a></h3>
                                 <ul>
                                     ${recipes.map(recipe => `
-                                        <li><a href="${recipe.url}">${recipe.title}</a></li>
+                                        <li><a href="${recipe.url}" class="text-success">${recipe.title}</a></li>
                                     `).join('')}
                                 </ul>
                             </div>
@@ -93,47 +93,54 @@
 
     <div class="mt-5">
     <h2 class="text-center mt-5 mb-4">Most Recent Recipes</h2>
-    <ul class="list-group">
+    <div class="row">
         {% for recipe in most_recent_recipes %}
-            <li class="list-group-item">
+        <div class="col-md-4 col-sm-6 mb-4">    
+            <div class="card">
                 <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
                     {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="img-fluid" style="width: 200px; height: 150px;">
                     {% else %}
-                        <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
+                        <img src="{% static 'images/logo.png' %}" alt="No image found" class="img-fluid" style="width: 200px; height: 150px;">
                     {% endif %}
-                </a><br>
+                </a>
                 <strong>{{ recipe.title }}</strong><br>
+                <span style="color: #1b7508; text-decoration: none;"><strong>Meal Type:</strong> {{ recipe.get_meal_type }}</span><br>
                 <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
-                    Region: {{ recipe.get_country_name }}
+                    <strong>Region:</strong> {{ recipe.get_country_name }}
                 </a><br>
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
-            </li>
+                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}"><strong>View Recipe</strong></a>
+            </div>
+        </div>
         {% empty %}
             <p class="text-centre">No recent recipes found. </p>
         {% endfor %}
-    </ul>
+    </div>
+</div>
 
     <h2 class="text-center mt-5 mb-4">Highest Rated Recipes</h2>
-    <ul class="list-group">
+    <div class="row">
         {% for recipe in most_rated_recipes %}
-            <li class="list-group-item">
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card">
                 <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
                     {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="img-fluid" style="width: 200px; height: 150px;">
                     {% else %}
-                        <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
+                        <img src="{% static 'images/logo.png' %}" alt="No image found" class="img-fluid" style="width: 200px; height: 150px;">
                     {% endif %}
                 </a><br>
                 <strong>{{ recipe.title }}</strong><br>
+                <span style="color: #1b7508; text-decoration: none;"><strong>Meal Type:</strong> {{ recipe.get_meal_type }}</span><br>
                 <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
-                    Region: {{ recipe.get_country_name }}
+                    <strong>Region:</strong> {{ recipe.get_country_name }}
                 </a><br>
-                <span style="color: #1b7508; text-decoration: none;">Rating: {{ recipe.avg_rating|floatformat:1 }}</span><br>
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
-            </li>
+                <span style="color: #1b7508; text-decoration: none;"><strong>Rating:</strong> {{ recipe.avg_rating|floatformat:1 }}</span><br>
+                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}"><strong>View Recipe</strong></a>
+            </div>
+        </div>
         {% empty %}
             <p class="text-center">No rated recipes found. </p>
         {% endfor %}
-    </ul>
+    </div>
 {% endblock %}

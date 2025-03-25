@@ -1,25 +1,16 @@
 <!DOCTYPE html>
+{% extends "world_recipe/bootstrap_base.html" %}
 {% load static %}
 
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>
-            {% block title %}
-             World Recipes -
-            {% endblock %}
-        </title>
-        <link href="{% static 'css/style.css' %}" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
+{% block title %}World Recipes -{% endblock %}
 
-    <body>
-        <header class="container">
+{% block extra_head %}
+<link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <header class="container">
         <div  class="row align-items-center">
-            <div class="col-6 col-md-3">
+            <div class="col-12 col-md-3">
                 <a href="{% url 'world_recipe:index' %}">
-                    <img src="{% static 'images/WorldRecipe.png' %}" alt="World Recipe Logo" height="100">
+                    <img src="{% static 'images/WorldRecipe.png' %}" alt="World Recipe Logo" class="img-fluid" style="max-height: 100px; object-fit: contain;" >
                 </a>
             </div>
             <div class="col-6 col-md-3 offset-md-6">
@@ -27,23 +18,26 @@
                     <input type="search" 
                         id="recipe-search" 
                         placeholder="Search recipes..." 
-                        autocomplete="off">
+                        autocomplete="off"
+                        style="object-fit: contain;">
                     <div id="search-results" class="search-results"></div>
                 </div>
-            <div class="d-flex gap-2">
-                {% if user.is_authenticated %}
+                <div class="d-flex gap-2">
+                    {% if user.is_authenticated %}
                         <img src="{{ MEDIA_URL }}{{ user.userprofile.profile_picture.url }}" alt="Profile" width="40" height="40" class="rounded-circle">
-                        <a href="{% url 'world_recipe:profile' user.username %}"class="btn btn-success w-47 mb-2">My Profile</a>
-                        <a href="{% url 'world_recipe:logout' %}"class="btn btn-success w-47 mb-2">Logout</a>
-                    
-                    </div>
-                {% else %}
-                    <a href="{% url 'world_recipe:login' %}"class="btn btn-success w-47 mb-2">Login</a>
-                    <a href="{% url 'world_recipe:register' %}" class="btn btn-success w-47 mb-2">Register</a>
-                {% endif %}
+                        <a href="{% url 'world_recipe:profile' user.username %}"class="btn btn-success w-47 mb-2" style="object-fit: contain;">My Profile</a>
+                        <a href="{% url 'world_recipe:logout' %}"class="btn btn-success w-47 mb-2"style="object-fit: contain;">Logout</a>
+                    {% else %}
+                        <a href="{% url 'world_recipe:login' %}"class="btn btn-success w-47 mb-2"style="object-fit: contain;">Login</a>
+                        <a href="{% url 'world_recipe:register' %}" class="btn btn-success w-47 mb-2"style="object-fit: contain;">Register</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
-    </div>
+{% endblock %}
+
+{% block content %}
+    
     </header>
         <!-- Main Content Section -->
         <main class="container my-4">
@@ -61,24 +55,21 @@
 
         <!-- Navigation Links Section -->
 
-        <footer class="bg-light py-3">
+        <footer class="bg py-3">
             <div class="container">
                 <div class="row">
                     <div class="col-md-6"></div>
                         <ul class="nav">
-                            <li class="nav-item"><a href="{% url 'world_recipe:index' %}" class="nav-link">Home</a></li>
-                            <li class="nav-item"><a href="{% url 'world_recipe:about' %}" class="nav-link">About</a></li>
-                        </ul>
+                                <li class="nav-item"><a href="{% url 'world_recipe:index' %}" class="nav-link">Home</a></li>
+                                <li class="nav-item"><a href="{% url 'world_recipe:about' %}" class="nav-link">About</a></li>
+                            </ul>
+                            <p class="mt-2">&copy; 2025 World Recipes created by Group 6C. All rights reserved.</p>  
                     </div>
-            
-            <div class="col-md-6 text-ends">
-                <p>&copy; 2025 World Recipes created by Group 6C. All rights reserved.</p>
             </div>
         </div>
-    </div>
     </footer>
-
-
+    {% endblock %}
+    {% block extra_js %}
         <script>
             // Temporary toggle implementation for dropdown menu
             document.addEventListener('DOMContentLoaded', function() {
@@ -148,5 +139,4 @@
                 });
             });
         </script>
-    </body>
-</html>
+    {% endblock %}
