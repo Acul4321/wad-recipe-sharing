@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from world_recipe.models import Recipe, UserProfile, Rating
 from django.utils import timezone
+from world_recipe.views import index
 
 class IndexViewTests(TestCase):
     def setUp(self):
@@ -98,4 +99,43 @@ class IndexViewTests(TestCase):
         # Test that the ratings for the recipes are correctly displayed in the context
         response = self.client.get(reverse('world_recipe:index'))
         self.assertContains(response, self.recipe1.average_rating())
+        self.assertContains(response, self.recipe2.average_rating())
+    
+    def test_view_exists(self):
+        """
+        Does the index() view exist in the world_recipe app's views.py module?
+        """
         
+        
+        is_callable = callable(index)
+        
+        
+        self.assertTrue(is_callable, "The index() view for world_recipe does not exist.")
+        
+    def test_for_about_hyperlink(self):
+        """
+        does the response contain the 'about' hyperlink in the index page?
+        Checks for both single and double quotes in the attribute. Both are acceptable.
+        """
+        response = self.client.get(reverse('world_recipe:index'))
+
+        # Check for the correct 'about' link (without worrying about quotes)
+        about_link_single = "<a href='/world-recipe/about/'>About</a>" in response.content.decode()
+        about_link_double = '<a href="/world-recipe/about/">About</a>' in response.content.decode()
+
+        # Assert that the About link is present
+        self.assertTrue(about_link_single or about_link_double, "We couldn't find the hyperlink to the /world-recipe/about/ URL in your index page. Check that it appears EXACTLY as in the book.")
+    
+    
+    def test_for_register_hyperlink(self):
+        """
+        Does the response contain the 'register' hyperlink in the index page?
+        """
+        response = self.client.get(reverse('world_recipe:index'))
+        print(response.content.decode())
+        # Check if the 'Register' link exists in the page
+        register_link_single = '<a href="/world-recipe/register/">Register</a>' in response.content.decode()
+        register_link_double = '<a href="/world-recipe/register/" class="register-link">Register</a>' in response.content.decode()
+        
+        self.assertTrue(register_link_single or register_link_double, 
+                        "We couldn't find the hyperlink to the /world-recipe/register/ URL in your index page. Check that it appears EXACTLY as in the index template.")
