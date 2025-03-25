@@ -41,21 +41,21 @@ class IndexViewTests(TestCase):
         r2 = Rating.objects.create(recipeID=self.recipe1, rating=5, userID=self.user)
         r3 = Rating.objects.create(recipeID=self.recipe2, rating=3, userID=self.user)
 
-        # Initialize the test client
+        # initialize the test client
         self.client = Client()
 
     def test_index_view_status(self):
-        # Test that the index page loads successfully
+        # test that the index page loads successfully
         response = self.client.get(reverse('world_recipe:index'))
         self.assertEqual(response.status_code, 200)
         
     def test_index_view_template(self):
-        # Test that the correct template is used
+        # test that the correct template is used
         response = self.client.get(reverse('world_recipe:index'))
         self.assertTemplateUsed(response, 'world_recipe/index.html')
         
     def test_index_view_context(self):
-        # Test that the context contains the expected data
+        # test that the context contains the expected data
         response = self.client.get(reverse('world_recipe:index'))
         self.assertTrue('most_recent_recipes' in response.context)
         self.assertTrue('most_rated_recipes' in response.context)
@@ -69,11 +69,11 @@ class IndexViewTests(TestCase):
         self.assertIn(self.recipe2, response.context['all_recipes'])
         
     def test_recent_recipes_order(self):
-        # Test that recent recipes are ordered by publish date
+        # test that recent recipes are ordered by publish date
         response = self.client.get(reverse('world_recipe:index'))
         recent_recipes = response.context['most_recent_recipes']
         self.assertGreaterEqual(len(recent_recipes), 2)
-        # Check that recipes are ordered by publish date (newest first)
+        # check that recipes are ordered by publish date (newest first)
         self.assertGreaterEqual(recent_recipes[0].publish_date, recent_recipes[1].publish_date)
 
     
@@ -90,13 +90,13 @@ class IndexViewTests(TestCase):
         response = self.client.get(reverse('world_recipe:index'))
         rated_recipes = response.context['most_rated_recipes']
         self.assertGreaterEqual(len(rated_recipes), 2)
-        # Check that recipes are ordered by rating value (highest rating first)
+        # check that recipes are ordered by rating value (highest rating first)
         # avg_rating is passed
         self.assertGreaterEqual(rated_recipes[0].avg_rating, rated_recipes[1].avg_rating)
 
 
     def test_recipe_ratings_in_context(self):
-        # Test that the ratings for the recipes are correctly displayed in the context
+        # test that the ratings for the recipes are correctly displayed in the context
         response = self.client.get(reverse('world_recipe:index'))
         self.assertContains(response, self.recipe1.average_rating())
         self.assertContains(response, self.recipe2.average_rating())
@@ -119,11 +119,11 @@ class IndexViewTests(TestCase):
         """
         response = self.client.get(reverse('world_recipe:index'))
 
-        # Check for the correct 'about' link (without worrying about quotes)
+        # check for the correct 'about' link (without worrying about quotes)
         about_link_single = "<a href='/world-recipe/about/'>About</a>" in response.content.decode()
         about_link_double = '<a href="/world-recipe/about/">About</a>' in response.content.decode()
 
-        # Assert that the About link is present
+        # assert that the About link is present
         self.assertTrue(about_link_single or about_link_double, "We couldn't find the hyperlink to the /world-recipe/about/ URL in your index page. Check that it appears EXACTLY as in the book.")
     
     
@@ -133,7 +133,7 @@ class IndexViewTests(TestCase):
         """
         response = self.client.get(reverse('world_recipe:index'))
         print(response.content.decode())
-        # Check if the 'Register' link exists in the page
+        # check if the 'Register' link exists in the page
         register_link_single = '<a href="/world-recipe/register/">Register</a>' in response.content.decode()
         register_link_double = '<a href="/world-recipe/register/" class="register-link">Register</a>' in response.content.decode()
         
