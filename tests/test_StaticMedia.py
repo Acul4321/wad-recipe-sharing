@@ -29,7 +29,7 @@ class StaticMediaTemplatesTests(TestCase):
         does_images_static_dir_exist = os.path.isdir(os.path.join(self.static_dir, 'images'))
         does_default_jpg_exist = os.path.isfile(os.path.join(self.static_dir, 'images', 'default.png'))
         self.assertTrue(does_images_static_dir_exist, "The images subdirectory was not found in your static directory")
-        self.assertTrue(does_rango_jpg_exist, "We couldn't locate the default.jpg image in the /static/images/ directory")
+        self.assertTrue(does_default_jpg_exist, "We couldn't locate the default.jpg image in the /static/images/ directory")
     
 
     def test_media_directory_exists(self):
@@ -44,7 +44,7 @@ class StaticMediaTemplatesTests(TestCase):
     def test_template_directory_exists(self):
         self.assertTrue(os.path.isdir(self.template_dir), "Template directory does not exist!")
     
-
+    
 
     
 
