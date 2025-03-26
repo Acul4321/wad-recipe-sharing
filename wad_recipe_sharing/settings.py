@@ -134,7 +134,6 @@ USE_TZ = True
 
 # Static files configuration
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # Determine if running on PythonAnywhere
 ON_PYTHONANYWHERE = os.path.exists('/home/acul4321/acul4321.pythonanywhere.com')
@@ -143,8 +142,12 @@ if ON_PYTHONANYWHERE:
     # PythonAnywhere static and media paths
     STATIC_ROOT = '/home/acul4321/acul4321.pythonanywhere.com/static'
     MEDIA_ROOT = '/home/acul4321/acul4321.pythonanywhere.com/media'
+    # In production, we don't use STATICFILES_DIRS as all static files 
+    # will be collected to STATIC_ROOT
+    STATICFILES_DIRS = []
 else:
     # Local development paths
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
