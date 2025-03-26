@@ -30,8 +30,6 @@ class UserProfile(models.Model):
 
 #
 # Recipe Model
-# due to django model limitations, we must create a separate model for images and link them to the recipe
-# https://qasimalbaqali.medium.com/upload-multiple-images-to-a-post-in-django-ff10f66e8f7a
 #
 
 # mealType choices for recipe

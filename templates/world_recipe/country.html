@@ -9,28 +9,41 @@
 <h1>Welcome to <strong>{{ country_name | capfirst}}</strong></h1>
 <p>Some description about the country and its recipes, and here is where you can browse by meal and sort by options.</p>
 
-<h1 class="text-center">Recipes</h1>
-    <div class="row">
-    {% for recipe in recipes %}
-        {% if recipe.get_country_name|slugify == country_name|slugify %}
-            <div class="col-md-4 col-sm-6 mb-4">    
-                <div class="card">
-                    <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                        {% if recipe.image %}
-                            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}"class="img-fluid" style="width: 200px; height: 150px;">
-                        {% else %}
-                            <img src="{% static 'images/logo.png' %}" alt="No image found"class="img-fluid"style="width: 200px; height: 150px;">
-                        {% endif %}
-                    </a><br>
-                    <strong>{{ recipe.title }}</strong><br>
-                    <span style="color: #1b7508; text-decoration: none;"><strong>Meal Type:</strong> {{ recipe.get_meal_type }}</span>
-                    <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}"><strong>View Recipe</strong></a>
-                </div>
-            </div>
-        {% endif %}
-    {% empty %}
-        <p>No recipes found for this region.</p>
-    {% endfor %}
+    <!-- dropdown to select meal type -->
+    <form method="get" id="meal-type-form">
+        <label for="meal-type">Filter by Meal Type:</label>
+        <select name="meal_type" id="meal-type">
+            <option value="all" {% if request.GET.meal_type == 'all' %}selected{% endif %}>All</option>
+            <option value="BF" {% if request.GET.meal_type == 'BF' %}selected{% endif %}>Breakfast</option>
+            <option value="LU" {% if request.GET.meal_type == 'LU' %}selected{% endif %}>Lunch</option>
+            <option value="DN" {% if request.GET.meal_type == 'DN' %}selected{% endif %}>Dinner</option>
+            <option value="SN" {% if request.GET.meal_type == 'SN' %}selected{% endif %}>Snack</option>
+            <option value="DS" {% if request.GET.meal_type == 'DS' %}selected{% endif %}>Dessert</option>
+        </select>
+    </form>
+
+    <!-- Country Filters -->
+    <form method="get" id="sort-by-form">
+        <label for="sort-by">Sort by:</label>
+        <select name="sort_by" id="sort-by">
+            <option value="none" {% if request.GET.sort_by == 'none' %}selected{% endif %}>None</option>
+            <option value="most_rated" {% if request.GET.sort_by == 'most_rated' %}selected{% endif %}>Most Rated</option>
+            <option value="recently_published" {% if request.GET.sort_by == 'recently_published' %}selected{% endif %}>Most Recently Published</option>
+        </select>
+    </form>
+
+    <!-- Recipe List -->
+    <h2>Recipes:</h2>
+    <div id="recipe-list">
+        {% include "world_recipe/includes/recipe_list.html" with recipes=recipes %}
     </div>
+
+    <!-- including jQuery and external js file -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        window.COUNTRY_NAME = "{{ country_name }}";
+        window.COUNTRY_URL = "{% url 'world_recipe:country' country=country_name %}";
+    </script>
+    <script src="{% static 'js/countryFilters.js' %}"></script>
 
 {% endblock %}
