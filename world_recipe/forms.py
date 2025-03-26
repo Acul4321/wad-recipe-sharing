@@ -30,11 +30,11 @@ class UserProfileForm(forms.ModelForm): # used to register a new user
             self.add_error('username', "Username cannot contain spaces")
         
         # username uniqueness check
-        if User.objects.filter(username__iexact=username).exists():
+        elif User.objects.filter(username__iexact=username).exists():
             self.add_error('username', "This username is already taken")
         
         # allowed characters  check(letters, numbers, and common symbols)
-        if not username.replace("_", "").replace("-", "").replace(".", "").isalnum():
+        elif not username.replace("_", "").replace("-", "").replace(".", "").isalnum():
             self.add_error('username', "Username can only contain letters, numbers, underscore, hyphen, and period")
 
         return cleaned_data

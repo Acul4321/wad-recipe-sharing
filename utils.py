@@ -17,7 +17,7 @@ COUNTRIES = {
     61: 'Grenada', 62: 'Guatemala', 63: 'Guinea', 64: 'Guinea-Bissau',
     65: 'Guyana', 66: 'Haiti', 67: 'Honduras', 68: 'Hungary',
     69: 'Iceland', 70: 'India', 71: 'Indonesia', 72: 'Iran',
-    73: 'Iraq', 74: 'Ireland', 75: 'Israel', 76: 'Italy',
+    73: 'Iraq', 74: 'Ireland', 75: 'Palestine', 76: 'Italy',
     77: 'Jamaica', 78: 'Japan', 79: 'Jordan', 80: 'Kazakhstan',
     81: 'Kenya', 82: 'Kiribati', 83: 'Kuwait', 84: 'Kyrgyzstan',
     85: 'Laos', 86: 'Latvia', 87: 'Lebanon', 88: 'Lesotho',
