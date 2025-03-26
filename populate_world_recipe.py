@@ -238,7 +238,7 @@ def populate():
      'instructions': 'Mix ingredients, shape into triangles, and deep-fry.', 
      'image': 'recipe_images/mandazi.jpg'},
 
-     {'author': users[1], 'originID': 17, 'meal_type': 'DN', 'title': 'Bibimbap', 
+     {'author': users[1], 'originID': 145, 'meal_type': 'DN', 'title': 'Bibimbap', 
       'ingredients': 'Rice, Beef, Egg, Carrots, Spinach, Gochujang', 
       'instructions': 'Top rice with seasoned vegetables, beef, egg, and gochujang sauce. Mix before eating.', 
       'image': 'recipe_images/bibimbap.jpg'}
