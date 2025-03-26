@@ -10,11 +10,12 @@ https://docs.djangoproject.com/en/2.1/howto/deployment/wsgi/
 import os
 import sys
 
-path = '/home/acul4321/acul4321.pythonanywhere.com'
+# Add project directory to Python path
+path = '/home/acul4321/wad-recipe-sharing'
 if path not in sys.path:
     sys.path.append(path)
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wad_recipe_sharing.settings')
+os.environ['DJANGO_SETTINGS_MODULE'] = 'wad_recipe_sharing.settings'
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()

@@ -134,17 +134,19 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Configure static files locations
-if DEBUG:
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'static')
-    ]
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-else:
-    STATIC_ROOT = '/home/acul4321/acul4321.pythonanywhere.com/static'
-    STATICFILES_DIRS = []
+# Static files configuration
+STATIC_URL = '/static/'
 
-# Media files (Uploaded files)
+if DEBUG:
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+else:
+    # PythonAnywhere paths
+    PROJECT_DIR = '/home/acul4321/wad-recipe-sharing'
+    STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+    STATICFILES_DIRS = []
+    MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') if DEBUG else '/home/acul4321/acul4321.pythonanywhere.com/media'
 
