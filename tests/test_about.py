@@ -26,8 +26,7 @@ class AboutPageTests(TestCase):
         #checks for links in the about page
         response = self.client.get(reverse('world_recipe:about'))  # Replace with actual URL name for your about page
         
-        single_quotes_check = '<a href=\'/world-recipe/\'>Home</a>' in response.content.decode()
-        double_quotes_check = '<a href="/world-recipe/">Home</a>' in response.content.decode()
+        link_check = '<a href="/world-recipe/">Home</a>' in response.content.decode()
 
-        self.assertTrue(single_quotes_check or double_quotes_check,
+        self.assertTrue(link_check,
                         "we could not find a hyperlink back to the index page in your about view ")

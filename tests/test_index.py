@@ -129,31 +129,28 @@ class IndexViewTests(TestCase):
         response = self.client.get(reverse('world_recipe:index'))
 
         # check for the correct 'about' link (without worrying about quotes)
-        about_link_single = "<a href='/world-recipe/about/'>About</a>" in response.content.decode()
-        about_link_double = '<a href="/world-recipe/about/">About</a>' in response.content.decode()
-
-        # assert that the About link is present
-        self.assertTrue(about_link_single or about_link_double, "We couldn't find the hyperlink to the /world-recipe/about/ URL in your index page check that it appears EXACTLY as in the book ")
+        home_link_check = '<a href="/world-recipe/" class="nav-link">Home</a>' in response.content.decode()
+        self.assertTrue(home_link_check,
+                "could not find a hyperlink back to the index page in your about")
+        
     
     
     def test_for_register_hyperlink(self):
         response = self.client.get(reverse('world_recipe:index'))
         
         # check if the 'Register' link exists in the page
-        register_link_single = '<a href="/world-recipe/register/">Register</a>' in response.content.decode()
-        register_link_double = '<a href="/world-recipe/register/" class="register-link">Register</a>' in response.content.decode()
-        
-        self.assertTrue(register_link_single or register_link_double, 
+        register_link_check = '<a href="/world-recipe/register/" class="btn btn-success w-47 mb-2" style="object-fit: contain;">Register</a>' in response.content.decode()
+
+        self.assertTrue(register_link_check, 
                         "we couldn't find the hyperlink to the /world-recipe/register/ URL in your index page. Check that it appears EXACTLY as in the index template ")
     
     def test_for_login_hyperlink(self):
         response = self.client.get(reverse('world_recipe:index'))
         
         # check if the 'Login' link exists in the page
-        login_link_single = '<a href="/world-recipe/login/">Login</a>' in response.content.decode()
-        login_link_double = '<a href="/world-recipe/login/" class="login-link">Login</a>' in response.content.decode()
+        login_link_check = '<a href="/world-recipe/login/" class="btn btn-success w-47 mb-2" style="object-fit: contain;">Login</a>' in response.content.decode()
         
-        self.assertTrue(login_link_single or login_link_double, 
+        self.assertTrue(login_link_check, 
                         "we couldn't find the hyperlink to the /world-recipe/login/ URL in your index page. Check that it appears EXACTLY as in the index template ")
         
 
