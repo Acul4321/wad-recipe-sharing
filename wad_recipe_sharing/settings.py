@@ -142,11 +142,11 @@ if DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 else:
-    # PythonAnywhere paths
-    PROJECT_DIR = '/home/acul4321/wad-recipe-sharing'
+    # PythonAnywhere production paths
+    PROJECT_DIR = '/home/acul4321/acul4321.pythonanywhere.com'
     STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
-    STATICFILES_DIRS = []
     MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
+    STATICFILES_DIRS = []
 
 MEDIA_URL = '/media/'
 
