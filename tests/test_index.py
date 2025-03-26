@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from world_recipe.models import Recipe, UserProfile, Rating
 from django.utils import timezone
+from django.conf import settings
 from world_recipe.views import index
 
 class IndexViewTests(TestCase):
@@ -43,6 +44,13 @@ class IndexViewTests(TestCase):
 
         # initialize the test client
         self.client = Client()
+    
+    def test_view_exists(self):
+        """
+        does the index() view exist in the world_recipe app's views.py module?
+        """
+        is_callable = callable(index)
+        self.assertTrue(is_callable, "the index() view for world_recipe does not exist ")
 
     def test_index_view_status(self):
         # test that the index page loads successfully
@@ -80,11 +88,13 @@ class IndexViewTests(TestCase):
 
 
     def test_recipe_titles_in_context(self):
-        # Test that the titles for the recipes are correctly displayed in the context
+        """check if recipe titles are correctly displayed in the index page content """
         response = self.client.get(reverse('world_recipe:index'))
-        self.assertContains(response, self.recipe1.title)
-        self.assertContains(response, self.recipe2.title)
-    
+        content = response.content.decode()  
+
+        self.assertIn(self.recipe1.title, content, "Index page does not contain the title '%s'." % self.recipe1.title)
+        self.assertIn(self.recipe2.title, content, "Index page does not contain the title '%s'." % self.recipe2.title)
+            
     def test_rated_recipes_order(self):
         # Test that rated recipes are ordered by rating value
         response = self.client.get(reverse('world_recipe:index'))
@@ -95,21 +105,25 @@ class IndexViewTests(TestCase):
         self.assertGreaterEqual(rated_recipes[0].avg_rating, rated_recipes[1].avg_rating)
 
 
+    def test_index_view_contains_map_script(self):
+        # test that the index page contains the google maps script
+        response = self.client.get(reverse('world_recipe:index'))
+        content = response.content.decode('utf-8')
+        
+        self.assertIn('<div id="recipe-map"', content)
+        
+        google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+        self.assertIn(f'https://maps.googleapis.com/maps/api/js?key={google_maps_api_key}&callback=initMap', content)
+
+
+
     def test_recipe_ratings_in_context(self):
         # test that the ratings for the recipes are correctly displayed in the context
         response = self.client.get(reverse('world_recipe:index'))
         self.assertContains(response, self.recipe1.average_rating())
         self.assertContains(response, self.recipe2.average_rating())
-    
-    def test_view_exists(self):
-        """
-        Does the index() view exist in the world_recipe app's views.py module?
-        """
-        is_callable = callable(index)
         
-        
-        self.assertTrue(is_callable, "The index() view for world_recipe does not exist.")
-        
+
     def test_for_about_hyperlink(self):
         #about hyperlink in the index page
         response = self.client.get(reverse('world_recipe:index'))
@@ -119,7 +133,7 @@ class IndexViewTests(TestCase):
         about_link_double = '<a href="/world-recipe/about/">About</a>' in response.content.decode()
 
         # assert that the About link is present
-        self.assertTrue(about_link_single or about_link_double, "We couldn't find the hyperlink to the /world-recipe/about/ URL in your index page. Check that it appears EXACTLY as in the book.")
+        self.assertTrue(about_link_single or about_link_double, "We couldn't find the hyperlink to the /world-recipe/about/ URL in your index page check that it appears EXACTLY as in the book ")
     
     
     def test_for_register_hyperlink(self):
@@ -133,10 +147,23 @@ class IndexViewTests(TestCase):
         register_link_double = '<a href="/world-recipe/register/" class="register-link">Register</a>' in response.content.decode()
         
         self.assertTrue(register_link_single or register_link_double, 
-                        "We couldn't find the hyperlink to the /world-recipe/register/ URL in your index page. Check that it appears EXACTLY as in the index template.")
+                        "we couldn't find the hyperlink to the /world-recipe/register/ URL in your index page. Check that it appears EXACTLY as in the index template ")
     
+    def test_for_login_hyperlink(self):
+        """
+        Does the response contain the 'login' hyperlink in the index page?
+        """
+        response = self.client.get(reverse('world_recipe:index'))
+        
+        # check if the 'Login' link exists in the page
+        login_link_single = '<a href="/world-recipe/login/">Login</a>' in response.content.decode()
+        login_link_double = '<a href="/world-recipe/login/" class="login-link">Login</a>' in response.content.decode()
+        
+        self.assertTrue(login_link_single or login_link_double, 
+                        "we couldn't find the hyperlink to the /world-recipe/login/ URL in your index page. Check that it appears EXACTLY as in the index template ")
+        
+
     def test_index_starts_with_doctype(self):
         response = self.client.get(reverse('world_recipe:index'))
         self.assertTrue(response.content.decode().startswith('<!DOCTYPE html>'), "your index.html does not start with <!DOCTYPE html>")
-    
-    
+

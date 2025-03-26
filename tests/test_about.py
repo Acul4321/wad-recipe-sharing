@@ -13,14 +13,15 @@ class AboutPageTests(TestCase):
 
     def test_about_page_content(self):
         response = self.client.get(reverse('world_recipe:about'))
-        self.assertContains(response, 'About World Recipes')
+        content = response.content.decode()
+        self.assertIn('About World Recipes', content, "about page doesnt contain about world recipes")
     
+
     def test_view_exists(self):
         """
         Does the about() view exist in your app's views.py module and is it callable?
         """
         is_callable = callable(getattr(views, 'about'))  # checks if 'about' is callable
-        
         
         self.assertTrue(is_callable, "Check you have defined your about() view correctly. We can't execute it.")
 
@@ -32,5 +33,4 @@ class AboutPageTests(TestCase):
         double_quotes_check = '<a href="/world-recipe/">Home</a>' in response.content.decode()
 
         self.assertTrue(single_quotes_check or double_quotes_check,
-                        "We could not find a hyperlink back to the index page in your about view. "
-                        "Check your about.html template, and try again.")
+                        "we could not find a hyperlink back to the index page in your about view ")

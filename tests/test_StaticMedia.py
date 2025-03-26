@@ -1,16 +1,23 @@
 from django.test import TestCase
 from django.conf import settings
 import os
+from dotenv import load_dotenv
+from world_recipe.models import UserProfile, Recipe
+from django.utils import timezone
+from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 
 class StaticMediaTemplatesTests(TestCase):
     def setUp(self):
+        
         self.project_base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.template_dir = os.path.join(self.project_base_dir, 'templates')
         self.static_dir = os.path.join(self.project_base_dir, 'static')
         self.media_dir = os.path.join(self.project_base_dir, 'media')
 
+        load_dotenv()
 
     def test_template_dir(self):
         # test that the template directory is set correctly
@@ -51,6 +58,8 @@ class StaticMediaTemplatesTests(TestCase):
         self.assertTrue(os.path.isfile(index_template), "index.html template was not found in the templates directory ")
         self.assertTrue(os.path.isfile(about_template), "about.html template was not found in the templates directory ")
 
+
+
     def test_static_media_config(self):
         static_dir_exists = 'STATIC_DIR' in dir(settings)
         self.assertTrue(static_dir_exists, "your settings.py module does not have the variable STATIC_DIR defined")
@@ -65,6 +74,39 @@ class StaticMediaTemplatesTests(TestCase):
 
         static_url_exists = 'STATIC_URL' in dir(settings)
         static_url_value = settings.STATIC_URL
-        self.assertTrue(static_url_exists, "The STATIC_URL variable has not been defined in settings.py.")
+        self.assertTrue(static_url_exists, "the STATIC_URL variable has not been defined in settings.py.")
         self.assertEqual(static_url_value, '/static/', "STATIC_URL should be set to '/static/'")
 
+        #media parts
+        media_dir_exists = 'MEDIA_DIR' in dir(settings)
+        self.assertTrue(media_dir_exists, "the MEDIA_DIR variable in settings.py has not been defined ")
+
+        media_path = os.path.normpath(settings.MEDIA_DIR)
+        expected_media_path = os.path.normpath(self.media_dir)
+        self.assertEqual(expected_media_path, media_path, "the MEDIA_DIR setting does not point to the correct path ")
+
+        media_root_exists = 'MEDIA_ROOT' in dir(settings)
+        self.assertTrue(media_root_exists, "the MEDIA_ROOT setting has not been defined ")
+
+        media_root_path = os.path.normpath(settings.MEDIA_ROOT)
+        self.assertEqual(expected_media_path, media_root_path, "the value of MEDIA_ROOT does not equal the value of MEDIA_DIR ")
+        media_url_exists = 'MEDIA_URL' in dir(settings)
+        self.assertTrue(media_url_exists, "the setting MEDIA_URL has not been defined in settings.py ")
+        media_url_value = settings.MEDIA_URL
+        self.assertEqual(media_url_value, '/media/', "MEDIA_URL should be set to '/media/'")
+
+
+    
+    def test_recipe_list_displays_images(self):
+        index_template = os.path.join(self.template_dir, 'world_recipe/includes/recipe_list.html')
+        with open(index_template, 'r') as file:
+            content = file.read()
+            self.assertTrue('<img' in content, "the recipe list does not display images")
+
+
+    def test_secret_key_loaded_from_env(self):
+        self.assertTrue(hasattr(settings, 'SECRET_KEY'), "SECRET_KEY is not set in Django settings")
+        secret_key_from_env = os.getenv('DJANGO_SECRET_KEY')
+        self.assertIsNotNone(secret_key_from_env, "The SECRET_KEY variable was not found in the .env file")
+
+    
