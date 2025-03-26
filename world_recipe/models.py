@@ -108,10 +108,17 @@ class Rating(models.Model):
     # primary key id is automatically created
     recipeID = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     userID = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(0)], blank=False)
+    rating = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)], blank=False)
 
     def __str__(self):
         return f"{self.recipeID}: {self.rating}"
+    
+    def save(self, *args, **kwargs):
+        if self.rating < 1:
+            self.rating = 1
+        elif self.rating > 5:
+            self.rating = 5
+        super(Rating, self).save(*args, **kwargs)
 
 #
 # Favorite Model
