@@ -5,26 +5,33 @@
 
 {% block body %}
 <div class="container">
-    <div class="profile-header">
-        <img src="{{ MEDIA_URL }}{{ userprofile.profile_picture.url }}" alt="Profile Picture" class="profile-picture" width="200" height="200">
-        <h2>{{ selected_user.username }}'s Profile</h2>
-        {% if request.user == selected_user %}
-            <button id="edit-toggle" class="btn btn-primary">Edit Profile</button>
-            <a href="{% url 'world_recipe:add_recipe' %}" class="btn btn-success">Add Recipe</a>
-        {% endif %}
-    </div>
-
-    <!-- Profile View Section -->
-    <div id="profile-view">
-        <div class="profile-section">
-            <h3>About Me</h3>
-            <p>{{ userprofile.description|default:"No description provided." }}</p>
-            <p>Origin: {{ userprofile.get_country_name }}</p>
+    <div class="row align-items-start">
+        <div class="col-md-4 text-start">
+            <div class="profile-header">
+                <img src="{{ MEDIA_URL }}{{ userprofile.profile_picture.url }}" alt="Profile Picture" class="profile-picture" width="200" height="200">
+                <h2>{{ selected_user.username }}'s Profile</h2>
+                {% if request.user == selected_user %}
+                <div class="d-flex gap-3 mt-2">  
+                    <button id="edit-toggle" class="btn btn-success">Edit Profile</button>
+                    <a href="{% url 'world_recipe:add_recipe' %}" class="btn btn-success">Add Recipe</a>
+                </div>  
+               {% endif %}
         </div>
     </div>
 
+    <!-- Profile View Section -->
+    <div id="profile-view" class="col-md-8 text-centre">
+        <div class="profile-section mt-4 text-center">
+            <h1>About Me</h1>
+            <p class="fs-4 fw-medium">{{ userprofile.description|default:"No description provided." }}</p>
+            <p class="fs-4 fw-medium">Origin: {{ userprofile.get_country_name }}</p>
+        </div>
+    </div>
+</div>
+
     <!-- Profile Edit Section -->
     {% if request.user == selected_user %}
+    <div class="container text-start">     
         <div id="profile-edit" style="display: none;">
             <form method="post" action="{% url 'world_recipe:profile' user.username %}" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -39,10 +46,13 @@
                         {% endif %}
                     </div>
                 {% endfor %}
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <button type="button" class="btn btn-secondary" id="cancel-edit">Cancel</button>
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                    <button type="button" class="btn btn-secondary ms-3" id="cancel-edit">Cancel</button>
+                </div>
             </form>
         </div>
+    </div>
     {% endif %}
 
     <!-- Users Recipes Section -->
@@ -59,7 +69,7 @@
 
     <!-- Favorites Section -->
     <div id="favourites" class="profile-section">
-        <h3>Favorite Recipes</h3>
+        <h2>Favorite Recipes</h2>
         {% if favorite_recipes %}
             {% include "world_recipe/includes/recipe_list.html" with recipes=favorite_recipes %}
         {% else %}
