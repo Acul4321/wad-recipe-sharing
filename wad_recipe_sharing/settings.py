@@ -132,21 +132,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
-
 # Static files configuration
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-if DEBUG:
-    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# Determine if running on PythonAnywhere
+ON_PYTHONANYWHERE = os.path.exists('/home/acul4321/acul4321.pythonanywhere.com')
+
+if ON_PYTHONANYWHERE:
+    # PythonAnywhere static and media paths
+    STATIC_ROOT = '/home/acul4321/acul4321.pythonanywhere.com/static'
+    MEDIA_ROOT = '/home/acul4321/acul4321.pythonanywhere.com/media'
+else:
+    # Local development paths
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-else:
-    # PythonAnywhere production paths
-    PROJECT_DIR = '/home/acul4321/acul4321.pythonanywhere.com'
-    STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
-    MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
-    STATICFILES_DIRS = []
 
 MEDIA_URL = '/media/'
 
