@@ -30,7 +30,7 @@ class StaticMediaTemplatesTests(TestCase):
 
 
     def test_static_directory_exists(self):
-        """check if the static directory exists."""
+        #check if the static directory exists
         self.assertTrue(os.path.isdir(self.static_dir), "Staic directory does not exist!")
 
         does_images_static_dir_exist = os.path.isdir(os.path.join(self.static_dir, 'images'))
@@ -40,7 +40,7 @@ class StaticMediaTemplatesTests(TestCase):
     
 
     def test_media_directory_exists(self):
-        """Check if the media directory, profile_pictures, and recipe_images exist."""
+        #check if the media directory, profile_pictures, and recipe_images exist
         self.assertTrue(os.path.isdir(self.media_dir), "Media directory does not existt")
         self.profile_pictures_dir = os.path.join(self.media_dir, 'profile_pictures')
         self.recipe_images_dir = os.path.join(self.media_dir, 'recipe_images')
@@ -52,7 +52,7 @@ class StaticMediaTemplatesTests(TestCase):
         self.assertTrue(os.path.isdir(self.template_dir), "template directory does not exist ")
     
     def test_template_files_exist(self):
-        """Check that the required templates exist."""
+        #check that the required templates exist.
         index_template = os.path.join(self.template_dir, 'world_recipe/index.html')
         about_template = os.path.join(self.template_dir, 'world_recipe/about.html')
         self.assertTrue(os.path.isfile(index_template), "index.html template was not found in the templates directory ")

@@ -88,7 +88,7 @@ class IndexViewTests(TestCase):
 
 
     def test_recipe_titles_in_context(self):
-        """check if recipe titles are correctly displayed in the index page content """
+        #is recipe titles displayed corectly in the index page?
         response = self.client.get(reverse('world_recipe:index'))
         content = response.content.decode()  
 
@@ -96,7 +96,7 @@ class IndexViewTests(TestCase):
         self.assertIn(self.recipe2.title, content, "Index page does not contain the title '%s'." % self.recipe2.title)
             
     def test_rated_recipes_order(self):
-        # Test that rated recipes are ordered by rating value
+        # test that rated recipes are ordered by rating value
         response = self.client.get(reverse('world_recipe:index'))
         rated_recipes = response.context['most_rated_recipes']
         self.assertGreaterEqual(len(rated_recipes), 2)
@@ -137,9 +137,6 @@ class IndexViewTests(TestCase):
     
     
     def test_for_register_hyperlink(self):
-        """
-        Does the response contain the 'register' hyperlink in the index page?
-        """
         response = self.client.get(reverse('world_recipe:index'))
         
         # check if the 'Register' link exists in the page
@@ -150,9 +147,6 @@ class IndexViewTests(TestCase):
                         "we couldn't find the hyperlink to the /world-recipe/register/ URL in your index page. Check that it appears EXACTLY as in the index template ")
     
     def test_for_login_hyperlink(self):
-        """
-        Does the response contain the 'login' hyperlink in the index page?
-        """
         response = self.client.get(reverse('world_recipe:index'))
         
         # check if the 'Login' link exists in the page

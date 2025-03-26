@@ -63,18 +63,18 @@ class AuthLoginAndRegisterTests(TestCase):
 
     
     def test_bad_regi_post_response(self):
-        # Simulate valid data
+
         form_data = {
             'username': 'new_user',
             'password': 'password123',
             'confirm_password': 'password123',
-            'originID': '1',  # assuming '1' is a valid country ID
+            'originID': '1',  
         }
         form = UserProfileForm(data=form_data)
         self.assertTrue(form.is_valid())
 
     def test_password_mismatch(self):
-        # Simulate password mismatch
+
         form_data = {
             'username': 'new_user',
             'password': 'password123',
@@ -86,7 +86,6 @@ class AuthLoginAndRegisterTests(TestCase):
         self.assertFormError(form, 'confirm_password', 'Passwords do not match')
 
     def test_username_with_spaces(self):
-        # Simulate username with spaces
         form_data = {
             'username': 'new user',
             'password': 'password123',
@@ -98,7 +97,6 @@ class AuthLoginAndRegisterTests(TestCase):
         self.assertFormError(form, 'username', 'Username cannot contain spaces')
 
     def test_invalid_username_characters(self):
-        # Simulate invalid characters in username
         form_data = {
             'username': 'new$user',
             'password': 'password123',
@@ -110,7 +108,6 @@ class AuthLoginAndRegisterTests(TestCase):
         self.assertFormError(form, 'username', 'Username can only contain letters, numbers, underscore, hyphen, and period')
 
     def test_existing_username(self):
-        # Simulate existing username
         User.objects.create_user(username='existing_user', password='password123')
         form_data = {
             'username': 'existing_user',
@@ -123,15 +120,53 @@ class AuthLoginAndRegisterTests(TestCase):
         self.assertFormError(form, 'username', 'This username is already taken')
 
 
+
 #login
     def test_login_page_status(self):
             response = self.client.get(reverse('world_recipe:login'))
             self.assertEqual(response.status_code, 200)
 
+    def test_login_view_exists(self):
+        url = ''
+        try:
+            url = reverse('world_recipe:login')
+        except:
+            pass
+        self.assertEqual(url, '/world-recipe/login/')
 
     
-    # def test_login_required_for_favorite(self):
-    #     response = self.client.get(reverse('world_recipe:favorite'))
-    #     self.assertEqual(response.status_code, 302)
+    def test_login_functionality(self):
+        user_object = User.objects.get(username='testuser')
+
+        response = self.client.post(reverse('world_recipe:login'), {'username': 'testuser', 'password': 'testpass123'})
+        self.assertEqual(response.status_code, 302)
+
+        
+        self.assertEqual(user_object.id, int(self.client.session['_auth_user_id']))
+        
+        
+        self.assertRedirects(response, reverse('world_recipe:index'))
+
+
+    
+#logout
+
+    def test_bad_request(self):
+        #attempt to logout a user who is not logged in
+        response = self.client.post(reverse('world_recipe:logout'))
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url, reverse('world_recipe:login'))
+    
+    def test_good_request(self):
+        #attempt to log out a user who is logged in
+        user_object = User.objects.get(username='testuser')
+        self.client.login(username='testuser', password='testpass123')
+        self.assertEqual(user_object.id, int(self.client.session['_auth_user_id']))
+    
+        response = self.client.post(reverse('world_recipe:logout'))
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url, reverse('world_recipe:login'))
+        self.assertEqual(self.client.session.get('_auth_user_id'), None)
+        
 
 

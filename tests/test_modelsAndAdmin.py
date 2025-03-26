@@ -7,7 +7,6 @@ from django.utils import timezone
 
 class ModelTests(TestCase):
     def setUp(self):
-        # Create a test user
         self.user = User.objects.create_user(
             username='testuser',
             password='testpass123'
@@ -88,9 +87,7 @@ class ModelTests(TestCase):
 
 #testing models methods
     def test_slug_creation(self):
-        """
-        Tests whether the slug is correctly generated from the title and author's username.
-        """
+        #test whether slug is correct
         recipe = Recipe.objects.create(
             title="Delicious Pasta",
             authorID=self.user,
@@ -105,9 +102,7 @@ class ModelTests(TestCase):
         self.assertEqual(recipe.slug, "delicious-pasta-testuser", "Recipe slug was not correctly generated ")
     
     def test_slug_uniqueness(self):
-        """
-        Tests whether the slug is unique when duplicate titles exist.
-        """
+        #is slug unique?
         recipe1 = Recipe.objects.create(
             title="Delicious Pasta",
             authorID=self.user,
@@ -143,36 +138,28 @@ class ModelTests(TestCase):
 
     
     def test_rating_min_value(self):
-        """
-        Tests whether the rating value is at least 1.
-        """
+       #test whether rating = 0 is handled correctly
         rating = Rating.objects.create(recipeID=self.recipe1, rating=0, userID=self.user)
         self.assertEqual(rating.rating >= 1, True)
     
     def test_rating_max_value(self):
-        """
-        Tests whether the rating value is at most 5.
-        """
+        #is a rating of 6 handled correctly
         rating = Rating.objects.create(recipeID=self.recipe1, rating=6, userID=self.user)
         self.assertEqual(rating.rating <= 5, True)
     
 
 #ADMIN INTEFRACE TESTS
     def test_admin_interface_accessible(self):
-        """
-        Tests whether the admin interface is accessible.
-        """
+        #is admin interfcae accesible
         # Log in as the superuser
         self.client.login(username='admin', password='adminpass123')
         
-        # Access the admin interface
+        # access admin interface
         response = self.client.get('/admin/')
         self.assertEqual(response.status_code, 200, "Admin interface is not accessible ")
     
     def test_models_present(self):
-        """
-        Tests whether the models are present in the admin interface.
-        """
+       #test models are present
         self.client.login(username='admin', password='adminpass123')
         
         # access the admin interface
@@ -186,9 +173,7 @@ class ModelTests(TestCase):
         self.assertIn('User profiles', response_body, "User profiles model is not present in the admin interface ")
 
     def test_admin_recipe_list_display(self):
-        """
-        Tests whether the admin interface displays the correct fields for the Recipe model.
-        """
+        #test admin intefrcae displays the correct columns
         self.client.login(username='admin', password='adminpass123')
         
         response = self.client.get('/admin/world_recipe/recipe/')

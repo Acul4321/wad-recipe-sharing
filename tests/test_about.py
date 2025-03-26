@@ -18,9 +18,6 @@ class AboutPageTests(TestCase):
     
 
     def test_view_exists(self):
-        """
-        Does the about() view exist in your app's views.py module and is it callable?
-        """
         is_callable = callable(getattr(views, 'about'))  # checks if 'about' is callable
         
         self.assertTrue(is_callable, "Check you have defined your about() view correctly. We can't execute it.")
