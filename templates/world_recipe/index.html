@@ -6,13 +6,15 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Travel the world from your kitchen!</h1>
-    <p style="font-size: 1.5em; margin-top: 20px;">Cooking up a cultural cuisine at your home is easier than you think</p>
-    <p style="font-size: 1.5em; margin-top: 20px;">Where will you travel today?</p>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Travel the world from your kitchen!</h1>
+    <p class="lead text-center">Cooking up a cultural cuisine at your home is easier than you think</p>
+    <p class="lead text-center">Where will you travel today?</p>
 
     <!-- Add map container -->
     <div id="recipe-map" style="height: 400px; width: 100%; margin: 20px 0;"></div>
 
+    <!-- Initialize map with recipe locations -->
     <!-- Initialize map with recipe locations -->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
     <script>
@@ -90,48 +92,53 @@
         window.onload = initMap;
     </script>
 
-    <h2>Most Recent Recipes</h2>
-    <ul>
+    <h2 class="mt-5">Most Recent Recipes</h2>
+    <ul class="list-unstyled">
         {% for recipe in most_recent_recipes %}
-            <li>
+            <li class="media mb-4">
                 <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
                     {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe-photo mr-3">
                     {% else %}
-                        <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
+                        <img src="{% static 'images/logo.png' %}" alt="No image found" class="recipe-photo mr-3">
                     {% endif %}
-                </a><br>
-                <strong>{{ recipe.title }}</strong><br>
-                <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
-                    Region: {{ recipe.get_country_name }}
-                </a><br>
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
+                </a>
+                <div class="media-body">
+                    <strong>{{ recipe.title }}</strong><br>
+                    <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
+                        Region: {{ recipe.get_country_name }}
+                    </a>
+                    <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
+                </div>
             </li>
         {% empty %}
             <p>No recent recipes found. </p>
         {% endfor %}
     </ul>
 
-    <h2>Most Rated Recipes</h2>
-    <ul>
+    <h2 class="mt-5">Most Rated Recipes</h2>
+    <ul class="list-unstyled">
         {% for recipe in most_rated_recipes %}
-            <li>
+            <li class="media mb-4">
                 <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
                     {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe-photo mt-3">
                     {% else %}
-                        <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
+                        <img src="{% static 'images/logo.png' %}" alt="No image found" class="recipe-photo mt-3">
                     {% endif %}
-                </a><br>
-                <strong>{{ recipe.title }}</strong><br>
-                <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
-                    Region: {{ recipe.get_country_name }}
-                </a><br>
-                Rating: {{ recipe.avg_rating|floatformat:1 }}<br>
-                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
+                </a>
+                <div class="media-body">
+                    <strong>{{ recipe.title }}</strong><br>
+                    <a href="{% url 'world_recipe:country' country=recipe.get_country_name|slugify %}">
+                        Region: {{ recipe.get_country_name }}
+                    </a><br>
+                    Rating: {{ recipe.avg_rating|floatformat:1 }}<br>
+                    <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">View Recipe</a>
+                </div>
             </li>
         {% empty %}
             <p>No rated recipes found. </p>
         {% endfor %}
     </ul>
+</div>
 {% endblock %}

@@ -1,15 +1,30 @@
-<h1>Welcome to {{ country_name }}</h1>
-<p>Some description about the country and its recipes, and here is where you can browse by meal and sort by options.</p>
+{% extends 'world_recipe/base.html' %}
+{% load static %}
 
-<h2>Recipes:</h2>
-<ul>
-    {% for recipe in recipes %}
-        <li>
-            <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                {{ recipe.title }}
-            </a>
-        </li>
-    {% empty %}
-        <p>No recipes found for this region.</p>
-    {% endfor %}
-</ul>
+{% block title %}{{ country_name }} {% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1>Welcome to {{ country_name }}</h1>
+            <p class="lead">Some description about the country and its recipes, and here is where you can browse by meal and sort by options.</p>
+    </div>
+
+    <div class="recipe-section">
+        <h2>Recipes:</h2>
+            <div class="row">
+                {% for recipe in recipes %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
+                                {{ recipe.title }}
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No recipes found for this region.</p>
+                {% endfor %}
+            </div>
+    </div>
+</div>
+{% endblock %}

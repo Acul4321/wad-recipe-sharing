@@ -4,19 +4,19 @@
 {% block title %}{{ selected_user.username }}'s Profile{% endblock %}
 
 {% block body %}
-<div class="container">
-    <div class="profile-header">
-        <img src="{{ MEDIA_URL }}{{ userprofile.profile_picture.url }}" alt="Profile Picture" class="profile-picture" width="200" height="200">
+<div class="container mt-5">
+    <div class="profile-header text-center mb-4">
+        <img src="{{ MEDIA_URL }}{{ userprofile.profile_picture.url }}" alt="Profile Picture" class="profile-picture rounded-circle" width="200" height="200">
         <h2>{{ selected_user.username }}'s Profile</h2>
         {% if request.user == selected_user %}
-            <button id="edit-toggle" class="btn btn-primary">Edit Profile</button>
-            <a href="{% url 'world_recipe:add_recipe' %}" class="btn btn-success">Add Recipe</a>
+            <button id="edit-toggle" class="btn btn-primary mt-3">Edit Profile</button>
+            <a href="{% url 'world_recipe:add_recipe' %}" class="btn btn-success mt-3">Add Recipe</a>
         {% endif %}
     </div>
 
     <!-- Profile View Section -->
-    <div id="profile-view">
-        <div class="profile-section">
+    <div id="profile-view" class = "profile-section">
+        <div class="card p-4 shadow-sm mb-4">
             <h3>About Me</h3>
             <p>{{ userprofile.description|default:"No description provided." }}</p>
             <p>Origin: {{ userprofile.get_country_name }}</p>
@@ -25,23 +25,25 @@
 
     <!-- Profile Edit Section -->
     {% if request.user == selected_user %}
-        <div id="profile-edit" style="display: none;">
-            <form method="post" action="{% url 'world_recipe:profile' user.username %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                {% for field in profile_form %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.errors %}
-                            <div class="alert alert-danger">
-                                {{ field.errors }}
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <button type="button" class="btn btn-secondary" id="cancel-edit">Cancel</button>
-            </form>
+        <div id="profile-edit" class="profile-section">
+            <div class = "card p-4 shadow-sm mb-4">
+                <form method="post" action="{% url 'world_recipe:profile' user.username %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in profile_form %}
+                        <div class="form-group mb-3">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="alert alert-danger mt-2">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-edit">Cancel</button>
+                </form>
+            </div>
         </div>
     {% endif %}
 
@@ -50,24 +52,26 @@
         <h3>My Recipes</h3>
         {% with user_recipes=selected_user.recipe_set.all %}
             {% if user_recipes %}
-                <ul class="recipe-list">
+                <div class="row">
                     {% for recipe in user_recipes %}
-                        <li class="recipe-item">
-                            <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                                {% if recipe.image %}
-                                    <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
-                                {% else %}
-                                    <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
-                                {% endif %}
-                                <div class="recipe-details">
-                                    <h4>{{ recipe.title }}</h4>
-                                    <p>Type: {{ recipe.get_meal_type }}</p>
-                                    <p>From: {{ recipe.get_country_name }}</p>
-                                </div>
-                            </a>
-                        </li>
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
+                                    {% if recipe.image %}
+                                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="card-img-top recipe-photo">
+                                    {% else %}
+                                        <img src="{% static 'images/logo.png' %}" alt="No image found" sclass="card-img-top recipe-photo">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ recipe.title }}</h5>
+                                        <p class = "card-text">Type: {{ recipe.get_meal_type }}</p>
+                                        <p class = card-text>From: {{ recipe.get_country_name }}</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
                     {% endfor %}
-                </ul>
+                    </div>
             {% else %}
                 <p>No recipes created yet.</p>
             {% endif %}
@@ -78,24 +82,26 @@
     <div id="favourites" class="profile-section">
         <h3>Favorite Recipes</h3>
         {% if favorite_recipes %}
-            <ul class="recipe-list">
+            <div class="row">
                 {% for recipe in favorite_recipes %}
-                    <li class="recipe-item">
-                        <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
-                            {% if recipe.image %}
-                                <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 200px; height: 150px;">
-                            {% else %}
-                                <img src="{% static 'images/logo.png' %}" alt="No image found" style="width: 200px; height: 150px;">
-                            {% endif %}
-                            <div class="recipe-details">
-                                <h4>{{ recipe.title }}</h4>
-                                <p>Type: {{ recipe.get_meal_type }}</p>
-                                <p>From: {{ recipe.get_country_name }}</p>
-                            </div>
-                        </a>
-                    </li>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <a href="{% url 'world_recipe:recipe' country=recipe.get_country_name|slugify meal_type=recipe.get_meal_type|slugify recipe_name=recipe.slug %}">
+                                {% if recipe.image %}
+                                    <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="card-img-top recipe-photo">
+                                {% else %}
+                                    <img src="{% static 'images/logo.png' %}" alt="No image found" class="card-img-top recipe-photo">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ recipe.title }}</h5>
+                                    <p class="card-text">Type: {{ recipe.get_meal_type }}</p>
+                                    <p class="card-text">From: {{ recipe.get_country_name }}</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+                </div>
         {% else %}
             <p>No favorite recipes yet.</p>
         {% endif %}

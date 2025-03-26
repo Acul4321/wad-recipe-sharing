@@ -11,137 +11,74 @@
             {% endblock %}
         </title>
         <link href="{% static 'css/style.css' %}" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
 
     <body>
+        <div class = "d-flex flex-column min-vh-100">
 
-        <div>
-            <a href="{% url 'world_recipe:index' %}">
-                <img src="{% static 'images/default.png' %}" alt="World Recipe Logo" height="30">
+        <!-- Navbar -->
+        <nav class = "navbar navbar expand-lg navbar-light background-green px-3">
+            <div class = "container-fluid">
+            <a href="{% url 'world_recipe:index' %}" class = "navbar-brand d-flex align-items-center">
+                <img src="{% static 'images/default.png' %}" alt="World Recipe Logo" height="40" class="me-2">
+                <span class="fw-bold fs-3">Curious Cuisine</span>
             </a>
 
-            <div class="search-container">
+            <form class="d-flex ms-3">
                 <input type="search" 
                        id="recipe-search" 
                        placeholder="Search recipes..." 
-                       autocomplete="off">
+                       autocomplete="off"
+                       class = "form-control me-2"> 
                 <div id="search-results" class="search-results"></div>
-            </div>
+            </form>
 
-            <div>
+            <div class = "ms-auto">
                 {% if user.is_authenticated %}
                     <div class="dropdown">
-                        <img src="{{ MEDIA_URL }}{{ user.userprofile.profile_picture.url }}" alt="Profile" width="30" height="30">
-                        <div class="dropdown-content" hidden>
-                            <a href="{% url 'world_recipe:profile' user.username %}">My Profile</a>
-                            <a href="{% url 'world_recipe:logout' %}">Logout</a>
-                        </div>
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ MEDIA_URL }}{{ user.userprofile.profile_picture.url }}" alt="Profile" width="30" height="30" class="rounded-circle me-1">
+                            {{ user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby = "profileDropdown">
+                            <li><a href="{% url 'world_recipe:profile' user.username %}" class = "dropdown-item">My Profile</a></li>
+                            <li><a href="{% url 'world_recipe:logout' %}" class = "dropdown-item">Logout</a></li>
+                        </ul>
                     </div>
                 {% else %}
-                    <a href="{% url 'world_recipe:login' %}">Login</a>
-                    <a href="{% url 'world_recipe:register' %}">Register</a
+                    <a href="{% url 'world_recipe:login' %}" class="btn btn-outline-dark me-2">Login</a>
+                    <a href="{% url 'world_recipe:register' %}" class = "btn btn-dark">Register</a>
                 {% endif %}
             </div>
-        </div>
+            </div>
+        </nav>
 
-        <!-- Main Content Section -->
-        <div>
+        <!-- Main Content -->
+        <div class = "container mt-4">
             {% block body %}
-            {% endblock %}
-        </div>
-
-        <!-- Sidebar Section (optional) -->
-        <div>
-            {% block sidebar %}
             {% endblock %}
         </div>
 
         <hr />
 
-        <!-- Navigation Links Section -->
+        <!-- Footer -->
 
-        <footer>
-            <div>
-                <ul>
-                    <li><a href="{% url 'world_recipe:index' %}">Home</a></li>
-                    <li><a href="{% url 'world_recipe:about' %}">About</a></li>
-                </ul>
+        <footer class = "text-center py-3 background-green mt-auto">
+            <div class = "d-flex justify-content-center gap-3">
+                <a href="{% url 'world_recipe:index' %}" class = "list-inline-item" class = "btn btn-outline-dark">Home</a>
+                <a href="{% url 'world_recipe:about' %}" class = "list-inline-item" class = "btn btn-outline-dark">About</a>
             </div>
             
             <div>
-                <p>&copy; 2025 World Recipes created by Group 6C. All rights reserved.</p>
+                <p class="mt-2">&copy; 2025 World Recipes created by Group 6C. All rights reserved.</p>
             </div>
         </footer>
 
-
-        <script>
-            // Temporary toggle implementation for dropdown menu
-            document.addEventListener('DOMContentLoaded', function() {
-                const dropdown = document.querySelector('.dropdown');
-                if (dropdown) {
-                    dropdown.addEventListener('click', function() {
-                        const content = this.querySelector('.dropdown-content');
-                        content.hidden = !content.hidden;
-                    });
-                }
-            });
-        </script>
-
-        {% comment %} Search bar {% endcomment %}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const searchInput = document.getElementById('recipe-search');
-                const searchResults = document.getElementById('search-results');
-                let timeoutId;
-
-                searchInput.addEventListener('input', function() {
-                    clearTimeout(timeoutId);
-                    
-                    if (this.value.length < 2) {
-                        searchResults.style.display = 'none';
-                        return;
-                    }
-
-                    timeoutId = setTimeout(() => {
-                        fetch(`/world-recipe/search/?q=${encodeURIComponent(this.value)}`, {
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            searchResults.innerHTML = '';
-                            if (data.recipes.length > 0) {
-                                data.recipes.forEach(recipe => {
-                                    const div = document.createElement('div');
-                                    div.className = 'search-result-item';
-                                    div.innerHTML = `
-                                        <a href="/world-recipe/recipe/${recipe.country}/${recipe.meal_type}/${recipe.slug}/">
-                                            <img src="${recipe.image || '/static/images/default.png'}" alt="${recipe.title}">
-                                            <div>
-                                                <h4>${recipe.title}</h4>
-                                                <p>${recipe.country}</p>
-                                            </div>
-                                        </a>
-                                    `;
-                                    searchResults.appendChild(div);
-                                });
-                                searchResults.style.display = 'block';
-                            } else {
-                                searchResults.innerHTML = '<div class="no-results">No recipes found</div>';
-                                searchResults.style.display = 'block';
-                            }
-                        });
-                    }, 300);
-                });
-
-                // Hide results when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                        searchResults.style.display = 'none';
-                    }
-                });
-            });
-        </script>
+        <!-- JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'js/dropdown.js' %}"></script>
+        <script src="{% static 'js/searchBar.js' %}"></script>
+        </div>
     </body>
 </html>
