@@ -11,7 +11,7 @@ from django.utils import timezone
 from world_recipe.models import UserProfile, Recipe, Rating, Comment, Favorite
 
 
-# Function to create a user and profile
+# function to create a user and profile
 def create_user(username, email, password, originID, image):
     user, created = User.objects.get_or_create(username=username, email=email)
     if created:
@@ -32,7 +32,7 @@ def create_user(username, email, password, originID, image):
         print("User already exists: %s" % user.username)
     return user
 
-# Function to create a recipe
+# function to create a recipe
 def create_recipe(author, originID, meal_type, title, ingredients, instructions, image):
     recipe, created = Recipe.objects.get_or_create(
         title=title,
@@ -66,25 +66,33 @@ def create_rating(user, recipe, rating_value):
 def add_ratings(recipe, users):
     for _ in range(2):  
         user = random.choice(users)  
-        rating_value = random.randint(1, 5)  
+        rating_value = random.randint(3,5)  
         create_rating(user, recipe, rating_value)
 
 
-def create_comment(user, recipe, content):
+def create_comment(user, recipe, content, parent=None):
     comment = Comment.objects.create(
         userID=user,
         recipeID=recipe,
-        content=content
+        content=content,
+        parent=parent
     )
     comment.save()
     return comment
 
 def add_comments(recipe, users):
-    for _ in range(2):  
-        user = random.choice(users)
-        content = "Thanks for the recipe!"  
-        create_comment(user, recipe, content)
+    comments_data = [
+        ("Great recipe! Turned out amazing!", "Thanks! Glad you liked it!"),
+        ("I had to tweak the spice level a bit, but loved it!", "That’s a great idea! What did you adjust?"),
+        ("Tried it for dinner, my family loved it.", "Awesome! What did they enjoy the most?")
+    ]
+    owner = recipe.authorID
+    for comment1, reply in comments_data:
+        user = random.choice([u for u in users if u != owner])
+        comment = create_comment(user, recipe, comment1)
+        create_comment(owner, recipe, reply, parent=comment)
 
+    
 def create_favorite(user, recipe):
     favorite = Favorite.objects.get_or_create(
         user=user,
@@ -94,13 +102,16 @@ def create_favorite(user, recipe):
     return favorite
 
 
-# Population function
+
 def populate():
     #
     users_data = [
-        {'username': 'user1', 'email': 'user1@gmail.com', 'password': 'password1', 'originID': 1, 'image':'profile_pictures/aqua.jpg'},
-        {'username': 'user2', 'email': 'user2@gmail.com', 'password': 'password2', 'originID': 2, 'image':'profile_pictures/KikiBg.jpg'},
-        {'username': 'user3', 'email': 'user3@gmail.com', 'password': 'password3', 'originID': 3, 'image':'profile_pictures/TotoroRainBg.jpg'}
+        {'username': 'Frida_nims', 'email': 'summer@gmail.com', 'password': 'password1', 'originID': 143, 'image':'profile_pictures/aqua.jpg'},
+        {'username': 'summer_bakes', 'email': 'autumn@gmail.com', 'password': 'password2', 'originID': 2, 'image':'profile_pictures/KikiBg.jpg'},
+        {'username': 'jason_k', 'email': 'jason@gmail.com', 'password': 'password3', 'originID': 3, 'image':'profile_pictures/TotoroRainBg.jpg'},
+        {'username': 'chef_anna', 'email': 'anna@gmail.com', 'password': 'password4', 'originID': 4, 'image':'profile_pictures/anna.jpg'},
+        {'username': 'baker_bob', 'email': 'bob@gmail.com', 'password': 'password5', 'originID': 5, 'image':'profile_pictures/bob.jpg'},
+        {'username': 'culinary_carla', 'email': 'carla@gmail.com', 'password': 'password6', 'originID': 6, 'image':'profile_pictures/carla.jpg'}
     ]
 
     users = []
@@ -214,8 +225,6 @@ def populate():
      'instructions': 'Layer soaked ladyfingers with mascarpone and cocoa.', 
      'image': 'recipe_images/tiramisu.jpg'},
 
-
-
     {'author': users[0], 'originID': 125, 'meal_type': 'DN', 'title': 'Adobo', 
     'ingredients': 'Chicken or Pork, Soy Sauce, Vinegar, Garlic, Bay Leaves', 
     'instructions': 'Simmer meat in soy sauce, vinegar, and spices until tender.', 
@@ -225,8 +234,6 @@ def populate():
      'ingredients': 'Egg Yolks, Condensed Milk, Sugar, Vanilla', 
      'instructions': 'Steam egg and milk mixture until set, then caramelize.', 
      'image': 'recipe_images/leche_flan.jpg'},
-
-    
 
     {'author': users[2], 'originID': 81, 'meal_type': 'DN', 'title': 'Nyama Choma', 
      'ingredients': 'Beef or Goat, Salt, Spices', 
@@ -252,14 +259,9 @@ def populate():
     
     for recipe in recipes:
         add_ratings(recipe, users)
-    
-    for recipe in recipes:
         add_comments(recipe, users)
-    
-    for recipe in recipes:
         for user in users:
             create_favorite(user, recipe)
-
 
 if __name__ == '__main__':
     print("Starting world_recipe population script...")
