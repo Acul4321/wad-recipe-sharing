@@ -176,6 +176,146 @@
     color: #666;
 }
 
+/* general styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #c4f6c5;
+    color: #0b3900;
+    text-align: center;
+    padding: 20px;
+}
+
+h1, h2, h3{
+    color: #009900;
+}
+
+.subtitle {
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+.container {
+    padding: 20px;
+    text-align: left;
+    background-color: #ddfdda;
+
+}
+
+.title {
+    font-size: 20px;
+    font-weight: bold;
+    text-fill: #1b7508;
+}
+
+
+.card a {
+    color: #1b7508;
+    text-decoration: none; 
+}
+
+.card a:hover {
+    color: #165c08; 
+    text-decoration: underline; 
+}
+
+.card {
+    text-align: center;
+    background-color: #d4fcd2; 
+    border: 1px solid #003b06;   
+    border-radius: 4px;        
+    padding: 15px;             
+    margin-bottom: 10px;
+}
+.card:hover {
+    background-color: #bbffb8; 
+}
+
+
+
+/*mobile screens*/
+@media screen and (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    .title {
+        font-size: 18px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .output-box {
+        font-size: 12px;
+    }
+    .search-container input {
+        max-width: 150px;
+        font-size: 10px;
+    }
+    .auth-buttons a {
+        font-size: 10px;
+        padding: 4px 10px;
+        width: auto;
+    }
+}
+/* tablets or medium sized screens*/
+@media screen and (min-width: 600px) and (max-width: 900px) {
+    .container {
+        padding: 15px;
+    }
+
+    .title {
+        font-size: 19px;
+    }
+
+    .btn {
+        font-size: 13px;
+        padding: 9px;
+    }
+
+    .output-box {
+        font-size: 13px;
+    }
+    .search-container input {
+        max-width: 175px;
+        font-size: 12px;
+    }
+    .auth-buttons a {
+        font-size: 12px;
+        padding: 6px 12px;
+        width: auto;
+    }
+}
+
+/*large screens*/
+@media screen and (min-width: 900px) {
+    .container {
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 22px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .output-box {
+        font-size: 14px;
+    }
+    .search-container input {
+        max-width: 250px;
+        font-size: 16px;
+    }
+    .auth-buttons a {
+        font-size: 16px;
+        padding: 8px 16px;
+        width: auto;
+    }
 /* Homepage Styles */
 .welcome-text {
     font-size: 1.5em;
