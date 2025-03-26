@@ -28,10 +28,11 @@ MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-default-key-for-development')
 # Google Maps API Key
-GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
+GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# set .env with Debug value desired
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "acul4321.pythonanywhere.com"]
 
@@ -133,10 +134,19 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# Static files configuration
+STATIC_URL = '/static/'
 
-# Media files (Uploaded files)
+if DEBUG:
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+else:
+    # PythonAnywhere production paths
+    PROJECT_DIR = '/home/acul4321/acul4321.pythonanywhere.com'
+    STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+    MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
+    STATICFILES_DIRS = []
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
