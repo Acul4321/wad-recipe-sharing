@@ -133,15 +133,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
-]
 
-# Set STATIC_ROOT based on environment
+# Configure static files locations
 if DEBUG:
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static')
+    ]
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 else:
     STATIC_ROOT = '/home/acul4321/acul4321.pythonanywhere.com/static'
+    STATICFILES_DIRS = []
 
 # Media files (Uploaded files)
 MEDIA_URL = '/media/'
