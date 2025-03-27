@@ -25,15 +25,4 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('world-recipe/', include('world_recipe.urls')),
     path('admin/', admin.site.urls),
-]
-
-# Serve media files in development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-else:
-    # Serve media files in production
-    urlpatterns += [
-        re_path(r'^media/(?P<path>.*)$', serve, {
-            'document_root': settings.MEDIA_ROOT,
-        }),
-    ]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
