@@ -388,4 +388,12 @@ h1, h2, h3{
 .country-link:hover {
     text-decoration: none;
 }
+.center-text {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 }
