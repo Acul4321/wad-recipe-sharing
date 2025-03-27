@@ -1,0 +1,391 @@
+/* search bar */
+.search-container {
+    position: relative;
+    display: inline-block;
+}
+
+#recipe-search {
+    padding: 8px;
+    width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.search-results {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.search-result-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.search-result-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.search-result-item h4 {
+    margin: 0 0 5px 0;
+}
+
+.search-result-item p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.no-results {
+    padding: 10px;
+    text-align: center;
+    color: #666;
+}
+
+/* Comment Styles */
+.comments-section {
+    margin-top: 2rem;
+}
+
+.comment {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.comment-header {
+    margin-bottom: 0.5rem;
+}
+
+.comment-content {
+    margin-bottom: 0.5rem;
+}
+
+.replies {
+    margin-left: 2rem;
+}
+
+.reply {
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+    border-left: 3px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.reply-form {
+    margin-left: 2rem;
+    margin-top: 0.5rem;
+}
+
+/* Map Styles */
+.map-info-window {
+    padding: 10px;
+    max-width: 300px;
+}
+
+.map-info-window h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.map-info-window ul {
+    margin: 0;
+    padding: 0 0 0 20px;
+}
+
+.map-info-window li {
+    margin: 5px 0;
+}
+
+.map-info-window a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.map-info-window a:hover {
+    text-decoration: underline;
+}
+
+/* Star Rating System */
+.rating-container {
+    margin: 20px 0;
+}
+
+.stars {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.star {
+    width: 24px;
+    height: 24px;
+}
+
+.star-filled {
+    fill: #ffd700;
+}
+
+.star-empty {
+    fill: #ccc;
+}
+
+.star-half {
+    fill: url(#half-fill);
+}
+
+.rating-value {
+    margin-left: 10px;
+    color: #666;
+}
+
+.rate-recipe {
+    margin-top: 10px;
+}
+
+.rate-recipe .stars {
+    cursor: pointer;
+}
+
+.rate-recipe small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+}
+
+/* general styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #c4f6c5;
+    color: #0b3900;
+    text-align: center;
+    padding: 20px;
+}
+
+h1, h2, h3{
+    color: #009900;
+}
+
+.subtitle {
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+.container {
+    padding: 20px;
+    text-align: left;
+    background-color: #ddfdda;
+
+}
+
+.title {
+    font-size: 20px;
+    font-weight: bold;
+    text-fill: #1b7508;
+}
+
+
+.card a {
+    color: #1b7508;
+    text-decoration: none; 
+}
+
+.card a:hover {
+    color: #165c08; 
+    text-decoration: underline; 
+}
+
+.card {
+    text-align: center;
+    background-color: #d4fcd2; 
+    border: 1px solid #003b06;   
+    border-radius: 4px;        
+    padding: 15px;             
+    margin-bottom: 10px;
+}
+.card:hover {
+    background-color: #bbffb8; 
+}
+
+
+
+/*mobile screens*/
+@media screen and (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    .title {
+        font-size: 18px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .output-box {
+        font-size: 12px;
+    }
+    .search-container input {
+        max-width: 150px;
+        font-size: 10px;
+    }
+    .auth-buttons a {
+        font-size: 10px;
+        padding: 4px 10px;
+        width: auto;
+    }
+}
+/* tablets or medium sized screens*/
+@media screen and (min-width: 600px) and (max-width: 900px) {
+    .container {
+        padding: 15px;
+    }
+
+    .title {
+        font-size: 19px;
+    }
+
+    .btn {
+        font-size: 13px;
+        padding: 9px;
+    }
+
+    .output-box {
+        font-size: 13px;
+    }
+    .search-container input {
+        max-width: 175px;
+        font-size: 12px;
+    }
+    .auth-buttons a {
+        font-size: 12px;
+        padding: 6px 12px;
+        width: auto;
+    }
+}
+
+/*large screens*/
+@media screen and (min-width: 900px) {
+    .container {
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 22px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .output-box {
+        font-size: 14px;
+    }
+    .search-container input {
+        max-width: 250px;
+        font-size: 16px;
+    }
+    .auth-buttons a {
+        font-size: 16px;
+        padding: 8px 16px;
+        width: auto;
+    }
+/* Homepage Styles */
+.welcome-text {
+    font-size: 1.5em;
+    margin-top: 20px;
+}
+
+#recipe-map {
+    height: 400px;
+    width: 100%;
+    margin: 20px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.recipe-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.recipe-item {
+    border: 1px solid #eee;
+    padding: 15px;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.recipe-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.recipe-image {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.recipe-details {
+    margin-top: 10px;
+}
+
+.recipe-item {
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.recipe-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.recipe-link:hover {
+    transform: scale(1.02);
+}
+
+.country-link {
+    position: relative;
+    z-index: 2;
+    color: blue;
+    text-decoration: underline;
+}
+
+.country-link:hover {
+    text-decoration: none;
+}
+}
