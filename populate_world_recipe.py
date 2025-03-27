@@ -23,7 +23,7 @@ def create_user(username, email, password, originID, image):
             user=user,
             originID=originID,
             profile_picture=image,
-            description="Description for %s" % username
+            description="Description for %s: Here are my recipes, please gie=ve it a like and comment!" % username
         )
         profile.save()
 
@@ -106,8 +106,8 @@ def create_favorite(user, recipe):
 def populate():
     #
     users_data = [
-        {'username': 'Frida_nims', 'email': 'summer@gmail.com', 'password': 'password1', 'originID': 143, 'image':'profile_pictures/aqua.jpg'},
-        {'username': 'summer_bakes', 'email': 'autumn@gmail.com', 'password': 'password2', 'originID': 2, 'image':'profile_pictures/KikiBg.jpg'},
+        {'username': 'Frida_nims', 'email': 'farida@gmail.com', 'password': 'password1', 'originID': 143, 'image':'profile_pictures/aqua.jpg'},
+        {'username': 'summer_bakes', 'email': 'summer@gmail.com', 'password': 'password2', 'originID': 2, 'image':'profile_pictures/KikiBg.jpg'},
         {'username': 'jason_k', 'email': 'jason@gmail.com', 'password': 'password3', 'originID': 3, 'image':'profile_pictures/TotoroRainBg.jpg'},
         {'username': 'chef_anna', 'email': 'anna@gmail.com', 'password': 'password4', 'originID': 4, 'image':'profile_pictures/anna.jpg'},
         {'username': 'baker_bob', 'email': 'bob@gmail.com', 'password': 'password5', 'originID': 5, 'image':'profile_pictures/bob.jpg'},
