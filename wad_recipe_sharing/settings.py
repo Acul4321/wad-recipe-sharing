@@ -19,11 +19,26 @@ load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
-STATIC_DIR = STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [STATIC_DIR, ]
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
 MEDIA_DIR = os.path.join(BASE_DIR, 'media')
-MEDIA_ROOT = MEDIA_DIR
+
+# URL static and media files
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+# if running on PythonAnywhere
+ON_PYTHONANYWHERE = os.path.exists('/home/acul4321/acul4321.pythonanywhere.com')
+
+if ON_PYTHONANYWHERE:
+    # Production settings
+    STATIC_ROOT = '/home/acul4321/acul4321.pythonanywhere.com/static'
+    MEDIA_ROOT = '/home/acul4321/acul4321.pythonanywhere.com/media'
+    STATICFILES_DIRS = []
+else:
+    # Development settings
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    MEDIA_ROOT = MEDIA_DIR
+    STATICFILES_DIRS = [STATIC_DIR]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -130,11 +145,3 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-# Static files configuration
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
