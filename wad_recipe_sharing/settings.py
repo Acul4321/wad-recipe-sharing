@@ -127,14 +127,19 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
+# Static and Media Files Configuration
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [STATIC_DIR, ]
+STATICFILES_DIRS = [STATIC_DIR]
 
-# Media files
-
+# Media Files Configuration
+MEDIA_URL = '/media/'
 MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT = MEDIA_DIR
-MEDIA_URL = '/media/'
+
+# Set production paths if on PythonAnywhere
+if os.path.exists('/home/acul4321/acul4321.pythonanywhere.com'):
+    STATIC_ROOT = '/home/acul4321/acul4321.pythonanywhere.com/static'
+    MEDIA_ROOT = '/home/acul4321/acul4321.pythonanywhere.com/media'
+    STATICFILES_DIRS = []
